@@ -43,8 +43,15 @@ void Logger::debug(std::string_view txt) const {
   if (LOG_DEBUG) {
     for (auto *stream : this->streams) {
       if (stream != nullptr && stream->good())
-        (*stream) << this->getTimeDate() << " | " << txt << std::endl;
+        (*stream) << this->getTimeDate() << " | [DEBUG] " << txt << std::endl;
     }
+  }
+}
+
+void Logger::error(std::string_view txt) const {
+  for (auto *stream : this->streams) {
+    if (stream != nullptr && stream->good())
+      (*stream) << this->getTimeDate() << " | [ERROR] " << txt << std::endl;
   }
 }
 

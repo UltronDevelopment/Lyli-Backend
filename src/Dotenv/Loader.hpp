@@ -1,7 +1,7 @@
 // This file is part of the Lyli Backend
-// File:    Server/TcpConnection.hpp
+// File:    Dotenv/Loader.hpp
 // Author:  Mina <mina@upndevelopment.de>
-// Date:    26 May 2032
+// Date:    27 May 2032
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -19,31 +19,19 @@
 // (c) 2023 UPN
 //
 
-#pragma once
+#include <map>
+#include <string_view>
 
-#include <boost/asio/io_context.hpp>
-#include <boost/asio/ip/tcp.hpp>
-
-#include <memory>
-
-namespace Lyli::Server {
-class TcpConnection {
+namespace Lyli::Dotenv {
+/* simple .env file loader */
+class Loader {
 public:
-  explicit TcpConnection(boost::asio::io_context &io);
-  ~TcpConnection();
+  Loader();
+  ~Loader();
 
-  static std::shared_ptr<TcpConnection> create(boost::asio::io_context &io) {
-    return std::make_shared<TcpConnection>(io);
-  }
-
-  boost::asio::ip::tcp::socket &getSocket();
-
-  void write();
+  void load(const std::string &path) const;
 
 private:
-  void handle_write(const boost::system::error_code &code, size_t bytes) const;
-
-  boost::asio::ip::tcp::socket _socket;
-  std::string _data;
+  void loadIntoEnv(std::string_view data) const;
 };
-} // namespace Lyli::Server
+} // namespace Lyli::Dotenv

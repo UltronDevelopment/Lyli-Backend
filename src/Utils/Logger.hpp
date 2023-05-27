@@ -26,14 +26,22 @@
 #include <vector>
 
 namespace Lyli::Utils {
+/* Singleton Logger class */
 class Logger {
 public:
   static Logger &getInstance();
 
+  /* generates normal output on every type of build */
   void trace(std::string_view txt) const;
 
+  /* generates as debug marked output on debug builds  */
   void debug(std::string_view txt) const;
 
+  /* generates as error marked output on every type of build */
+  void error(std::string_view txt) const;
+
+  /* delet move and copy constructor to ensure there can only be a single
+   * instance */
   Logger(const Logger &) = delete;
   Logger &operator=(const Logger &) = delete;
   Logger(Logger &&) = delete;

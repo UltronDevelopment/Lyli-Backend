@@ -21,18 +21,25 @@
 
 #include <boost/asio/io_context.hpp>
 
+#include <Dotenv/Loader.hpp>
 #include <Server/TcpServer.hpp>
 #include <Utils/Logger.hpp>
+#include <cstdlib>
+
+const Lyli::Utils::Logger &logger = Lyli::Utils::Logger::getInstance();
+
+void loadEnv() {
+  logger.trace("Loading .env file");
+  Lyli::Dotenv::Loader loader{};
+  loader.load(".env");
+}
 
 int main() {
-  const auto &u = Lyli::Utils::Logger::getInstance();
+  /* loading environment variables */
+  loadEnv();
 
-  /* gets only printed on debug builds */
-  u.debug("!!! DEBUG BUILD !!!");
-
-  u.trace("Lyli Backend starting...");
+  logger.trace("TCP Server starting...");
   Lyli::Server::TcpServer server{};
-  server.listen();
 
   return 0;
 }

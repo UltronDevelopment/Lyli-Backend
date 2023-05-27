@@ -48,8 +48,15 @@ void TcpConnection::write() {
 }
 
 void TcpConnection::handle_write(const boost::system::error_code &code,
-                                 size_t bytes) {
+                                 size_t bytes) const {
+  const auto &logger = Utils::Logger::getInstance();
+
   Utils::Logger::getInstance().debug(
-      std::format("[TCP] wrote {} bytes", bytes));
+      std::format("TCP Server wrote {} bytes", bytes));
+
+  if (!code) {
+    logger.error(std::format("TCP Server Error: {}", code.message()));
+    return;
+  }
 }
 } // namespace Lyli::Server

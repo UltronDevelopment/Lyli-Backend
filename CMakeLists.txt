@@ -26,6 +26,8 @@ ELSE()
 ENDIF(LOG_DEBUG)
 
 add_executable(lyli-backend
+    src/Dotenv/Loader.cpp
+    src/Dotenv/Parser.cpp
     src/Server/TcpServer.cpp
     src/Server/TcpConnection.cpp
     src/Utils/Logger.cpp

@@ -1,7 +1,7 @@
 // This file is part of the Lyli Backend
-// File:    Server/TcpConnection.hpp
+// File:    Dotenv/Parser.hpp
 // Author:  Mina <mina@upndevelopment.de>
-// Date:    26 May 2032
+// Date:    27 May 2032
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -19,31 +19,22 @@
 // (c) 2023 UPN
 //
 
-#pragma once
+#include <map>
+#include <string>
+#include <string_view>
 
-#include <boost/asio/io_context.hpp>
-#include <boost/asio/ip/tcp.hpp>
-
-#include <memory>
-
-namespace Lyli::Server {
-class TcpConnection {
+namespace Lyli::Dotenv {
+class Parser {
 public:
-  explicit TcpConnection(boost::asio::io_context &io);
-  ~TcpConnection();
+  Parser();
+  ~Parser();
 
-  static std::shared_ptr<TcpConnection> create(boost::asio::io_context &io) {
-    return std::make_shared<TcpConnection>(io);
-  }
+  void parse(std::string_view data);
 
-  boost::asio::ip::tcp::socket &getSocket();
-
-  void write();
+  const std::map<std::string, std::string, std::less<>> &getBuffer() const;
 
 private:
-  void handle_write(const boost::system::error_code &code, size_t bytes) const;
-
-  boost::asio::ip::tcp::socket _socket;
-  std::string _data;
+  /* var_name:value */
+  std::map<std::string, std::string, std::less<>> vars;
 };
-} // namespace Lyli::Server
+} // namespace Lyli::Dotenv
