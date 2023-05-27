@@ -1,3 +1,4 @@
+// This file is part of the Lyli Backend
 // File:    Server/TcpServer.hpp
 // Author:  Mina <mina@upndevelopment.de>
 // Date:    26 May 2032
@@ -15,7 +16,7 @@
 // You should have received a copy of the GNU General Public License along
 // with this program. If not, see <https://www.gnu.org/licenses/>.
 //
-// (c) UPN
+// (c) 2023 UPN
 //
 
 #pragma once
