@@ -19,8 +19,8 @@
 // (c) 2023 UPN
 //
 
-#include "Utils/Logger.hpp"
 #include <Dotenv/Parser.hpp>
+#include <Utils/Logger.hpp>
 
 #include <cstddef>
 #include <format>
