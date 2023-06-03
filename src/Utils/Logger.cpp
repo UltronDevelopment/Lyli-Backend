@@ -30,7 +30,7 @@ Logger &Logger::getInstance() {
   return instance;
 }
 
-void Logger::trace(std::string_view txt) const {
+void Logger::trace([[maybe_unused]] std::string_view txt) const {
   if (LOG_TRACE) {
     for (auto *stream : this->streams) {
       if (stream != nullptr && stream->good())
@@ -39,7 +39,7 @@ void Logger::trace(std::string_view txt) const {
   }
 }
 
-void Logger::debug(std::string_view txt) const {
+void Logger::debug([[maybe_unused]] std::string_view txt) const {
   if (LOG_DEBUG) {
     for (auto *stream : this->streams) {
       if (stream != nullptr && stream->good())

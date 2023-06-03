@@ -19,17 +19,18 @@
 // (c) 2023 UPN
 //
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 #include <Server/TcpConnection.hpp>
 #include <Server/TcpServer.hpp>
 #include <Utils/Logger.hpp>
 
+#include <format>
 #include <memory>
 
 namespace Lyli::Server {
 TcpServer::TcpServer()
-    : io(boost::asio::io_context{5}),
+    : io(boost::asio::io_context{10}),
       _acceptor(io, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),
                                                    port)) {
   /* start listener */
@@ -54,14 +55,18 @@ void TcpServer::listen() {
 
 void TcpServer::handle_accept(std::shared_ptr<TcpConnection> &connection,
                               const boost::system::error_code &error) {
-  Utils::Logger::getInstance().trace(std::format(
+  Utils::Logger::getInstance().debug(std::format(
       "Incoming connection from {}",
       connection->getSocket().remote_endpoint().address().to_string()));
 
-  if (!error) {
-    Utils::Logger::getInstance().trace("handling connection...");
-    connection->write();
+  if (error.failed()) {
+    Utils::Logger::getInstance().error(
+        std::format("TCP Server: {}", error.message()));
+    return;
   }
+
+  Utils::Logger::getInstance().debug("handling connection...");
+  connection->read();
 
   this->listen();
 }

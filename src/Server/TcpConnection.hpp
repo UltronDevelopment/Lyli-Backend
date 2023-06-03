@@ -24,10 +24,12 @@
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
 
+#include <functional>
 #include <memory>
+#include <string>
 
 namespace Lyli::Server {
-class TcpConnection {
+class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
 public:
   explicit TcpConnection(boost::asio::io_context &io);
   ~TcpConnection();
@@ -40,10 +42,13 @@ public:
 
   void write();
 
+  void read();
+
 private:
   void handle_write(const boost::system::error_code &code, size_t bytes) const;
 
+  [[maybe_unused]] boost::asio::io_context &io;
   boost::asio::ip::tcp::socket _socket;
-  std::string _data;
+  std::string _rdbuf;
 };
 } // namespace Lyli::Server

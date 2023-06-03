@@ -10,24 +10,27 @@ find_package(nlohmann_json REQUIRED)
 
 include_directories(src)
 
-OPTION(LOG_TRACE "Toggle logger output" ON)
-OPTION(LOG_DEBUG "Toggle debug output" OFF)
+option(TRACE "Toggle logger output" ON)
+option(DEBUG "Toggle debug output" OFF)
 
-IF(LOG_TRACE)
-    ADD_DEFINITIONS(-DLOG_TRACE=1)
-ELSE()
-    ADD_DEFINITIONS(-DLOG_TRACE=0)
-ENDIF(LOG_TRACE)
+if(TRACE)
+    add_definitions(-DLOG_TRACE=1)
+else()
+    add_definitions(-DLOG_TRACE=0)
+endif(TRACE)
 
-IF(LOG_DEBUG)
-    ADD_DEFINITIONS(-DLOG_DEBUG=1)
-ELSE()
-    ADD_DEFINITIONS(-DLOG_DEBUG=0)
-ENDIF(LOG_DEBUG)
+if(DEBUG)
+    add_definitions(-DLOG_DEBUG=1)
+else()
+    add_definitions(-DLOG_DEBUG=0)
+ENDIF(DEBUG)
+
+add_compile_options(-Wall -O2)
 
 add_executable(lyli-backend
     src/Dotenv/Loader.cpp
     src/Dotenv/Parser.cpp
+    src/Server/HTTP/HttpRequest.cpp
     src/Server/TcpServer.cpp
     src/Server/TcpConnection.cpp
     src/Utils/Logger.cpp

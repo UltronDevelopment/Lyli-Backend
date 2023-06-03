@@ -1,7 +1,7 @@
 // This file is part of the Lyli Backend
-// File:    main.cpp
+// File:    Utils/StringUtils.hpp
 // Author:  Mina <mina@upndevelopment.de>
-// Date:    26 May 2023
+// Date:    30 May 2023
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -19,34 +19,21 @@
 // (c) 2023 UPN
 //
 
-#include <boost/asio/io_context.hpp>
+#pragma once
 
-#include <Dotenv/Loader.hpp>
-#include <Server/TcpServer.hpp>
-#include <Utils/Logger.hpp>
-#include <cstdlib>
-
+#include <ranges>
 #include <string_view>
 
-const Lyli::Utils::Logger &logger = Lyli::Utils::Logger::getInstance();
+namespace Lyli::Utils::StringUtils {
+/* get the position from the next byte with the value @c in @str as iterator */
+inline const char *ptrToNext(std::string_view str, char c) {
+  if (str.begin() + 1 == str.end())
+    return nullptr;
 
-static inline void loadEnv() {
-  logger.trace("Loading .env file");
-  Lyli::Dotenv::Loader loader{};
-  loader.load(".env");
+  auto it = std::ranges::find(str.begin(), str.end(), c);
+  if (it == str.end())
+    return nullptr;
+
+  return it;
 }
-
-static inline void startServer() {
-  logger.trace("TCP Server starting...");
-  Lyli::Server::TcpServer server{};
-}
-
-int main() {
-  /* loading environment variables */
-  loadEnv();
-
-  /* start tcp server and listen */
-  startServer();
-
-  return 0;
-}
+} // namespace Lyli::Utils::StringUtils
