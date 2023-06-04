@@ -25,7 +25,6 @@
 #include <Server/TcpServer.hpp>
 #include <Utils/Logger.hpp>
 
-#include <format>
 #include <memory>
 
 namespace Lyli::Server {
@@ -34,11 +33,10 @@ TcpServer::TcpServer()
       _acceptor(io, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),
                                                    port)) {
   /* start listener */
-  Utils::Logger::getInstance().trace(
-      std::format("TcpServer init listener on port {}", TcpServer::port));
+  Utils::Logger::getInstance().trace("TcpServer init listener");
   this->listen();
 
-  Utils::Logger::getInstance().trace("TcpServer io.run");
+  Utils::Logger::getInstance().trace("TcpServer io.run()");
   this->io.run();
 }
 
@@ -55,13 +53,12 @@ void TcpServer::listen() {
 
 void TcpServer::handle_accept(std::shared_ptr<TcpConnection> &connection,
                               const boost::system::error_code &error) {
-  Utils::Logger::getInstance().debug(std::format(
-      "Incoming connection from {}",
-      connection->getSocket().remote_endpoint().address().to_string()));
+  Utils::Logger::getInstance().debug(
+      "Incoming connection from " +
+      connection->getSocket().remote_endpoint().address().to_string());
 
   if (error.failed()) {
-    Utils::Logger::getInstance().error(
-        std::format("TCP Server: {}", error.message()));
+    Utils::Logger::getInstance().error("TCP Server: " + error.message());
     return;
   }
 

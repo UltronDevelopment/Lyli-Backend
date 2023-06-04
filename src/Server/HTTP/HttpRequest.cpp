@@ -23,7 +23,6 @@
 #include <Utils/Logger.hpp>
 #include <Utils/StringUtils.hpp>
 
-#include <format>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -72,9 +71,6 @@ bool HttpRequest::firstParse(std::string_view data) {
     return false;
   }
 
-  Utils::Logger::getInstance().debug(std::format(
-      "RequestType: {}", HttpRequest::requestTypeToString(this->request_type)));
-
   /* Path */
   const char *ptr2 = Utils::StringUtils::ptrToNext(ptr1 + 1, ' ');
   if (ptr2 == nullptr)
@@ -100,8 +96,6 @@ std::pair<bool, const char *> HttpRequest::headerParse(std::string_view data) {
     /* parse header name */
     if (start.at(i) == ':') {
       name_buffer = std::string(start.data() + nbeg, start.data() + i);
-      Utils::Logger::getInstance().debug(
-          std::format("Parsed Header Name: {}", name_buffer));
     }
 
     /* parse value for name */
@@ -112,15 +106,12 @@ std::pair<bool, const char *> HttpRequest::headerParse(std::string_view data) {
 
       this->header[name_buffer] =
           std::string_view(start.data() + vbeg, start.data() + i);
-      Utils::Logger::getInstance().debug(
-          std::format("Parsed value: {}", this->header.at(name_buffer)));
     }
 
     if (start.at(i) == '\n') {
       /* data found */
       if (start.size() > i + 2 && start.at(i + 1) == '\r' &&
           start.at(i + 2) == '\n') {
-        Utils::Logger::getInstance().debug("Datablock found");
         return std::pair(true, &start.at(i + 2));
       }
 
@@ -128,7 +119,6 @@ std::pair<bool, const char *> HttpRequest::headerParse(std::string_view data) {
     }
   }
 
-  Utils::Logger::getInstance().debug("Return");
   return std::pair(true, nullptr);
 }
 

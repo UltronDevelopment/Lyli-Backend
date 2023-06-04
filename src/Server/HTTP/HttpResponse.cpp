@@ -21,7 +21,7 @@
 
 #include <Server/HTTP/HttpResponse.hpp>
 
-#include <format>
+#include <sstream>
 
 namespace Lyli::Server::HTTP {
 HttpResponse::HttpResponse() = default;
@@ -30,22 +30,21 @@ HttpResponse::~HttpResponse() = default;
 void HttpResponse::setCode(ResponseCode code) { this->code = code; }
 
 std::string HttpResponse::toString() const {
-  std::string buffer;
+  std::stringstream buffer;
 
   /* version and status code */
-  buffer.append(std::format("HTTP/1.1 {} {}\r\n",
-                            static_cast<std::uint16_t>(this->code),
-                            HttpResponse::codeToString(this->code)));
+  buffer << "HTTP/1.1" << static_cast<std::uint16_t>(this->code)
+         << HttpResponse::codeToString(this->code) << "\r\n";
 
   /* header */
   for (const auto &[name, value] : this->header) {
-    buffer.append(std::format("{}: {}\r\n", name, value));
+    buffer << name << ": " << value << "\r\n";
   }
 
   /* data */
-  buffer.append("\r\n" + this->data);
+  buffer << "\r\n" << this->data;
 
-  return buffer;
+  return buffer.str();
 }
 
 std::string_view HttpResponse::codeToString(ResponseCode code) {

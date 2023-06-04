@@ -79,11 +79,8 @@ void TcpConnection::handle_write(const boost::system::error_code &code,
                                  size_t bytes) const {
   const auto &logger = Utils::Logger::getInstance();
 
-  Utils::Logger::getInstance().debug(
-      std::format("TCP Server wrote {} bytes", bytes));
-
   if (code.failed()) {
-    logger.error(std::format("TCP Server Error: {}", code.message()));
+    logger.error("TCP Server Error: " + code.message());
     return;
   }
 }
@@ -93,27 +90,25 @@ void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
                             size_t bytes) {
   const auto &adress = con->_socket.remote_endpoint().address().to_string();
 
-  Utils::Logger::getInstance().debug(std::format("Read | {} Bytes", bytes));
-
   if (code.failed()) {
-    Utils::Logger::getInstance().error(
-        std::format("TCP Connection Error: {}", code.message()));
+    Utils::Logger::getInstance().error("TCP Connection Error: " +
+                                       code.message());
     return;
   }
 
   /* Parse to HTTP Object */
   auto req{HTTP::HttpRequest::create(con->_rdbuf)};
   if (req == nullptr) {
-    Utils::Logger::getInstance().error(
-        std::format("Got invalid http request from {}", adress));
+    Utils::Logger::getInstance().error("Got invalid http request from " +
+                                       adress);
     return;
   }
 
   /* log RequestType and Path */
   Utils::Logger::getInstance().trace(
-      std::format("[{}] {} {}", adress,
-                  HTTP::HttpRequest::requestTypeToString(req->getRequestType()),
-                  req->getPath()));
+      "[" + adress + "] " +
+      HTTP::HttpRequest::requestTypeToString(req->getRequestType()).data() +
+      ' ' + req->getPath().data());
 
   /* get handler function as function ptr */
   auto *handler = API::Router::getInstance().route(req->getPath());

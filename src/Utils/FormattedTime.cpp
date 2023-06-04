@@ -21,22 +21,34 @@
 
 #include <Utils/FormattedTime.hpp>
 
+#include <bits/types/time_t.h>
 #include <chrono>
 #include <ctime>
-#include <locale>
+#include <sstream>
 
 /* https://en.cppreference.com/w/cpp/chrono/duration/formatter */
 namespace Lyli::Utils {
-static auto getTime() {
-  return std::chrono::current_zone()->to_local(
+
+static time_t getTime() {
+  return std::chrono::high_resolution_clock::to_time_t(
       std::chrono::high_resolution_clock::now());
 }
 
 std::string FormattedTime::HTTP() {
-  return std::format("{:%a, %d %b %T %Z}", std::chrono::system_clock::now());
+  std::stringstream buffer;
+
+  auto time = getTime();
+  const auto *tm = std::localtime(&time);
+  buffer << std::put_time(tm, "%a, %d %b %T %Z");
+  return buffer.str();
 }
 
 std::string FormattedTime::Logger() {
-  return std::format("{:%Y-%m-%d %X}", getTime());
+  std::stringstream buffer;
+
+  auto time = getTime();
+  const auto *tm = std::localtime(&time);
+  buffer << std::put_time(tm, "%Y %b %d %X");
+  return buffer.str();
 }
 } // namespace Lyli::Utils

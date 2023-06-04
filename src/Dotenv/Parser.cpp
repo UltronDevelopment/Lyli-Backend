@@ -23,7 +23,6 @@
 #include <Utils/Logger.hpp>
 
 #include <cstddef>
-#include <format>
 #include <string>
 #include <string_view>
 
@@ -39,8 +38,7 @@ void Parser::parse(std::string_view data) {
     /* parse var name */
     if (data.at(i) == '=') {
       name_buffer = std::string(data.data() + nbeg, data.data() + i);
-      Utils::Logger::getInstance().debug(
-          std::format("Parsed ENV: {}", name_buffer));
+      Utils::Logger::getInstance().debug("Parsed ENV: " + name_buffer);
     }
 
     /* parse value for name */
@@ -51,8 +49,7 @@ void Parser::parse(std::string_view data) {
 
       this->vars[name_buffer] =
           std::string_view(data.data() + vbeg, data.data() + i - 1);
-      Utils::Logger::getInstance().debug(
-          std::format("Parsed value from: {}", name_buffer));
+      Utils::Logger::getInstance().debug("Parsed value from: " + name_buffer);
     }
 
     if (data.at(i) == '\n')

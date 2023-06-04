@@ -25,7 +25,6 @@
 
 #include <cstddef>
 #include <cstdlib>
-#include <format>
 #include <fstream>
 #include <ios>
 #include <iterator>
@@ -38,7 +37,7 @@ void Loader::load(const std::string &path) const {
   /* open file stream for reading */
   std::ifstream file{path, std::ios::in};
   if (!file.is_open()) {
-    Utils::Logger::getInstance().error(std::format("failed to open {}", path));
+    Utils::Logger::getInstance().error("failed to open " + path);
     return;
   }
 
