@@ -29,10 +29,11 @@
 
 #include <API/Router.hpp>
 #include <Server/HTTP/HttpRequest.hpp>
+#include <Server/HTTP/HttpResponse.hpp>
 #include <Server/TcpConnection.hpp>
+#include <Utils/FormattedTime.hpp>
 #include <Utils/Logger.hpp>
 
-#include <format>
 #include <memory>
 #include <string_view>
 
@@ -44,9 +45,19 @@ TcpConnection::~TcpConnection() = default;
 boost::asio::ip::tcp::socket &TcpConnection::getSocket() {
   return this->_socket;
 }
-void TcpConnection::write() {
+
+void TcpConnection::write(std::string_view data) {
+  Lyli::Server::HTTP::HttpResponse resp{};
+  resp.setCode(Lyli::Server::HTTP::ResponseCode::OK);
+  resp.setData(data);
+
+  resp.setHeaderValue("date", Lyli::Utils::FormattedTime::HTTP());
+  resp.setHeaderValue("server", "lyli-backend");
+  resp.setHeaderValue("Content-Type", "application/json; charset=utf-8");
+  resp.setHeaderValue("connection", "close");
+
   boost::asio::async_write(
-      this->_socket, boost::asio::buffer("lol"),
+      this->_socket, boost::asio::buffer(resp.toString()),
       boost::bind(&TcpConnection::handle_write, this,
                   boost::asio::placeholders::error,
                   boost::asio::placeholders::bytes_transferred));
@@ -60,33 +71,7 @@ void TcpConnection::read() {
       boost::asio::buffer(this->_rdbuf),
       [con = this->shared_from_this()](const boost::system::error_code &code,
                                        size_t bytes) {
-        const auto &adress =
-            con->_socket.remote_endpoint().address().to_string();
-
-        Utils::Logger::getInstance().debug(
-            std::format("Read | {} Bytes", bytes));
-
-        Utils::Logger::getInstance().debug(con->_rdbuf);
-
-        /* Parse to HTTP Objects */
-        Lyli::Server::HTTP::HttpRequest req{con->_rdbuf};
-        if (!req.isValid()) {
-          Utils::Logger::getInstance().error(
-              std::format("Got invalid http request from {}", adress));
-          return;
-        }
-
-        /* log RequestType and Path */
-        Utils::Logger::getInstance().trace(std::format(
-            "[{}] {} {}", adress,
-            HTTP::HttpRequest::requestTypeToString(req.getRequestType()),
-            req.getPath()));
-
-        if (code.failed()) {
-          Utils::Logger::getInstance().error(
-              std::format("TCP Server Error: {}", code.message()));
-          return;
-        }
+        TcpConnection::respond(con, code, bytes);
       });
 }
 
@@ -103,4 +88,46 @@ void TcpConnection::handle_write(const boost::system::error_code &code,
   }
 }
 
+void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
+                            const boost::system::error_code &code,
+                            size_t bytes) {
+  const auto &adress = con->_socket.remote_endpoint().address().to_string();
+
+  Utils::Logger::getInstance().debug(std::format("Read | {} Bytes", bytes));
+
+  if (code.failed()) {
+    Utils::Logger::getInstance().error(
+        std::format("TCP Connection Error: {}", code.message()));
+    return;
+  }
+
+  /* Parse to HTTP Object */
+  auto req{HTTP::HttpRequest::create(con->_rdbuf)};
+  if (req == nullptr) {
+    Utils::Logger::getInstance().error(
+        std::format("Got invalid http request from {}", adress));
+    return;
+  }
+
+  /* log RequestType and Path */
+  Utils::Logger::getInstance().trace(
+      std::format("[{}] {} {}", adress,
+                  HTTP::HttpRequest::requestTypeToString(req->getRequestType()),
+                  req->getPath()));
+
+  /* get handler function as function ptr */
+  auto *handler = API::Router::getInstance().route(req->getPath());
+
+  /* it should be impossible that handler is null here, but just in case */
+  if (handler == nullptr) {
+    Utils::Logger::getInstance().error(
+        "Found no handler (that is fucking bad and should be fixed RIGHT "
+        "NOW)");
+    /* reset connection, cause i wrote garbage */
+    return;
+  }
+
+  Utils::Logger::getInstance().debug(handler(req));
+  con->write(R"({"id": 0, "isHurensohn": true})");
+}
 } // namespace Lyli::Server

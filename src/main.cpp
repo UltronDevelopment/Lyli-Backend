@@ -21,31 +21,35 @@
 
 #include <boost/asio/io_context.hpp>
 
+#include <API/Router.hpp>
 #include <Dotenv/Loader.hpp>
 #include <Server/TcpServer.hpp>
 #include <Utils/Logger.hpp>
-#include <cstdlib>
 
+#include <cstdlib>
 #include <string_view>
 
 const Lyli::Utils::Logger &logger = Lyli::Utils::Logger::getInstance();
 
 static inline void loadEnv() {
+  /* load variables from the .env file */
   logger.trace("Loading .env file");
   Lyli::Dotenv::Loader loader{};
   loader.load(".env");
 }
 
 static inline void startServer() {
+  /* setup router */
+  logger.trace("Setup Router...");
+  Lyli::API::Router::getInstance().setup();
+
+  /* start server */
   logger.trace("TCP Server starting...");
   Lyli::Server::TcpServer server{};
 }
 
 int main() {
-  /* loading environment variables */
   loadEnv();
-
-  /* start tcp server and listen */
   startServer();
 
   return 0;

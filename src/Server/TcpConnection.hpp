@@ -40,11 +40,15 @@ public:
 
   boost::asio::ip::tcp::socket &getSocket();
 
-  void write();
+  void write(std::string_view data);
 
   void read();
 
 private:
+  /* handler for asynchronus responding */
+  static void respond(std::shared_ptr<TcpConnection> con,
+                      const boost::system::error_code &code, size_t bytes);
+
   void handle_write(const boost::system::error_code &code, size_t bytes) const;
 
   [[maybe_unused]] boost::asio::io_context &io;
