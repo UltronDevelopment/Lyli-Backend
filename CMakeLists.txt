@@ -30,9 +30,12 @@ add_compile_options(-Wall -O2)
 add_executable(lyli-backend
     src/Dotenv/Loader.cpp
     src/Dotenv/Parser.cpp
+    src/Server/HTTP/HttpObject.cpp
     src/Server/HTTP/HttpRequest.cpp
+    src/Server/HTTP/HttpResponse.cpp
     src/Server/TcpServer.cpp
     src/Server/TcpConnection.cpp
+    src/Utils/FormattedTime.cpp
     src/Utils/Logger.cpp
     src/main.cpp
 )

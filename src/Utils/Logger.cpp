@@ -19,6 +19,7 @@
 // (c) 2023 UPN
 //
 
+#include <Utils/FormattedTime.hpp>
 #include <Utils/Logger.hpp>
 
 #include <chrono>
@@ -34,7 +35,7 @@ void Logger::trace([[maybe_unused]] std::string_view txt) const {
   if (LOG_TRACE) {
     for (auto *stream : this->streams) {
       if (stream != nullptr && stream->good())
-        (*stream) << this->getTimeDate() << " | " << txt << std::endl;
+        (*stream) << FormattedTime::Logger() << " | " << txt << std::endl;
     }
   }
 }
@@ -43,7 +44,8 @@ void Logger::debug([[maybe_unused]] std::string_view txt) const {
   if (LOG_DEBUG) {
     for (auto *stream : this->streams) {
       if (stream != nullptr && stream->good())
-        (*stream) << this->getTimeDate() << " | [DEBUG] " << txt << std::endl;
+        (*stream) << FormattedTime::Logger() << " | [DEBUG] " << txt
+                  << std::endl;
     }
   }
 }
@@ -51,14 +53,8 @@ void Logger::debug([[maybe_unused]] std::string_view txt) const {
 void Logger::error(std::string_view txt) const {
   for (auto *stream : this->streams) {
     if (stream != nullptr && stream->good())
-      (*stream) << this->getTimeDate() << " | [ERROR] " << txt << std::endl;
+      (*stream) << FormattedTime::Logger() << " | [ERROR] " << txt << std::endl;
   }
-}
-
-std::string Logger::getTimeDate() const {
-  auto const time =
-      std::chrono::current_zone()->to_local(std::chrono::system_clock::now());
-  return std::format("{:%Y-%m-%d %X}", time);
 }
 
 Logger::Logger() { streams.push_back(&std::cout); }

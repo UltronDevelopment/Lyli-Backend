@@ -1,7 +1,7 @@
 // This file is part of the Lyli Backend
-// File:    Server/HTTP/HttpRequest.hpp
+// File:    Server/HTTP/HttpObject.hpp
 // Author:  Mina <mina@upndevelopment.de>
-// Date:    28 May 2023
+// Date:    04 June 2023
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -21,37 +21,32 @@
 
 #pragma once
 
-#include <Server/HTTP/HttpObject.hpp>
-
-#include <cstddef>
 #include <map>
-#include <memory>
 #include <string>
 #include <string_view>
 
 namespace Lyli::Server::HTTP {
 
-class HttpRequest : public HttpObject {
+enum class RequestType : std::size_t { NONE, GET, POST, PATCH, DELETE };
+
+class HttpObject {
 public:
-  explicit HttpRequest(std::string_view data);
-  ~HttpRequest();
+  HttpObject();
+  ~HttpObject();
 
-  RequestType getRequestType() const;
-  std::string_view getPath() const;
+  std::string_view getHeaderValue(const std::string &key) const;
+  std::string_view getData() const;
+  bool isValid() const;
 
-  /* shared_ptr creation with validation
-   * returns nullptr if invalid */
-  static std::shared_ptr<HttpRequest> create(std::string_view data);
+  void setHeaderValue(const std::string &key, std::string_view value);
+  void setData(std::string_view data);
 
-private:
-  RequestType checkRequestType(std::string_view data) const;
+  static std::string_view requestTypeToString(RequestType type);
 
-  bool parse(std::string_view data);
-  bool firstParse(std::string_view data);
-  std::pair<bool, const char *> headerParse(std::string_view data);
-  bool dataParse(std::string_view data);
+protected:
+  std::map<std::string, std::string, std::less<>> header;
+  std::string data;
 
-  RequestType request_type;
-  std::string path;
+  bool valid;
 };
 } // namespace Lyli::Server::HTTP

@@ -1,7 +1,7 @@
 // This file is part of the Lyli Backend
-// File:    Server/HTTP/HttpRequest.hpp
+// File:    Server/HTTP/HttpResponse.hpp
 // Author:  Mina <mina@upndevelopment.de>
-// Date:    28 May 2023
+// Date:    04 June 2023
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -23,35 +23,25 @@
 
 #include <Server/HTTP/HttpObject.hpp>
 
-#include <cstddef>
-#include <map>
-#include <memory>
-#include <string>
+#include <cstdint>
 #include <string_view>
 
 namespace Lyli::Server::HTTP {
 
-class HttpRequest : public HttpObject {
+enum class ResponseCode : std::uint16_t { OK = 200, NOT_FOUND = 404 };
+
+class HttpResponse : public HttpObject {
 public:
-  explicit HttpRequest(std::string_view data);
-  ~HttpRequest();
+  HttpResponse();
+  ~HttpResponse();
 
-  RequestType getRequestType() const;
-  std::string_view getPath() const;
+  void setCode(ResponseCode code);
 
-  /* shared_ptr creation with validation
-   * returns nullptr if invalid */
-  static std::shared_ptr<HttpRequest> create(std::string_view data);
+  std::string toString() const;
+
+  static std::string_view codeToString(ResponseCode code);
 
 private:
-  RequestType checkRequestType(std::string_view data) const;
-
-  bool parse(std::string_view data);
-  bool firstParse(std::string_view data);
-  std::pair<bool, const char *> headerParse(std::string_view data);
-  bool dataParse(std::string_view data);
-
-  RequestType request_type;
-  std::string path;
+  ResponseCode code;
 };
 } // namespace Lyli::Server::HTTP

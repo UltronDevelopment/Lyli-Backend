@@ -22,37 +22,21 @@
 #include <Server/HTTP/HttpRequest.hpp>
 #include <Utils/Logger.hpp>
 #include <Utils/StringUtils.hpp>
+
 #include <format>
+#include <memory>
 #include <string>
 #include <string_view>
 
 namespace Lyli::Server::HTTP {
-HttpRequest::HttpRequest(std::string_view data) : valid(this->parse(data)) {}
+HttpRequest::HttpRequest(std::string_view data) {
+  this->valid = this->parse(data);
+}
+
 HttpRequest::~HttpRequest() = default;
 
 RequestType HttpRequest::getRequestType() const { return this->request_type; }
 std::string_view HttpRequest::getPath() const { return this->path; }
-std::string_view HttpRequest::getHeaderValue(const std::string &key) const {
-  return this->header.at(key);
-}
-std::string_view HttpRequest::getData() const { return this->data; }
-bool HttpRequest::isValid() const { return this->valid; }
-
-std::string_view HttpRequest::requestTypeToString(RequestType type) {
-  switch (type) {
-    using enum Lyli::Server::HTTP::RequestType;
-  case GET:
-    return "GET";
-  case POST:
-    return "POST";
-  case PATCH:
-    return "PATCH";
-  case DELETE:
-    return "DELETE";
-  default:
-    return "";
-  }
-}
 
 bool HttpRequest::parse(std::string_view data) {
   if (!this->firstParse(data))
@@ -89,7 +73,7 @@ bool HttpRequest::firstParse(std::string_view data) {
   }
 
   Utils::Logger::getInstance().debug(std::format(
-      "RequType: {}", static_cast<std::size_t>(this->request_type)));
+      "RequestType: {}", HttpRequest::requestTypeToString(this->request_type)));
 
   /* Path */
   const char *ptr2 = Utils::StringUtils::ptrToNext(ptr1 + 1, ' ');
@@ -103,7 +87,6 @@ bool HttpRequest::firstParse(std::string_view data) {
 
 std::pair<bool, const char *> HttpRequest::headerParse(std::string_view data) {
   const char *sptr = Utils::StringUtils::ptrToNext(data, '\n') + 1;
-  Utils::Logger::getInstance().debug(sptr);
   if (sptr == nullptr)
     return std::pair(false, nullptr);
 
@@ -177,6 +160,14 @@ RequestType HttpRequest::checkRequestType(std::string_view data) const {
     return DELETE;
 
   return NONE;
+}
+
+std::shared_ptr<HttpRequest> HttpRequest::create(std::string_view data) {
+  auto http = std::make_shared<HttpRequest>(data);
+  if (!http->isValid())
+    return nullptr;
+
+  return http;
 }
 
 } // namespace Lyli::Server::HTTP

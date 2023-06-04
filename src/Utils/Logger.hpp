@@ -48,8 +48,6 @@ public:
   Logger &operator=(Logger &&) = delete;
 
 private:
-  std::string getTimeDate() const;
-
   Logger();
 
   std::vector<std::ostream *> streams;
