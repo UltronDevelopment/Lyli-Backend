@@ -26,7 +26,10 @@ HttpObject::HttpObject() = default;
 HttpObject::~HttpObject() = default;
 
 std::string_view HttpObject::getHeaderValue(const std::string &key) const {
-  return this->header.at(key);
+  if (this->header.contains(key))
+    return this->header.at(key);
+
+  return "";
 }
 std::string_view HttpObject::getData() const { return this->data; }
 bool HttpObject::isValid() const { return this->valid; }

@@ -40,8 +40,7 @@
 #include <string_view>
 
 namespace Lyli::Server {
-TcpConnection::TcpConnection(boost::asio::io_context &io)
-    : io(io), _socket(io) {}
+TcpConnection::TcpConnection(boost::asio::io_context &io) : _socket(io) {}
 TcpConnection::~TcpConnection() = default;
 
 boost::asio::ip::tcp::socket &TcpConnection::getSocket() {
@@ -81,7 +80,7 @@ void TcpConnection::handle_write(const boost::system::error_code &code,
 void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
                             const boost::system::error_code &code,
                             [[maybe_unused]] size_t bytes) {
-  const auto &address = con->_socket.remote_endpoint().address().to_string();
+  auto address = con->_socket.remote_endpoint().address().to_string();
 
   if (code.failed()) {
     Utils::Logger::getInstance().error("TCP Connection Error: " +
@@ -97,7 +96,9 @@ void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
     return;
   }
 
-  /* log RequestType and Path if not localhost */
+  if (auto x_ip = req->getHeaderValue("X-Real-IP"); !x_ip.empty())
+    address = x_ip;
+
   if (address != "127.0.0.1") {
     Utils::Logger::getInstance().trace(
         "[" + address + "] " +
