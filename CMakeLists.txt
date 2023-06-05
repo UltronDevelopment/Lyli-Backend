@@ -41,4 +41,4 @@ add_executable(lyli-backend
     src/main.cpp
 )
 
-target_link_libraries(lyli-backend PUBLIC nlohmann_json)
+target_link_libraries(lyli-backend PUBLIC nlohmann_json pthread)

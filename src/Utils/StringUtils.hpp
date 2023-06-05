@@ -21,8 +21,8 @@
 
 #pragma once
 
-#include <ranges>
 #include <string_view>
+#include <algorithm>
 
 namespace Lyli::Utils::StringUtils {
 /* get the position from the next byte with the value @c in @str as iterator */
@@ -30,7 +30,7 @@ inline const char *ptrToNext(std::string_view str, char c) {
   if (str.begin() + 1 == str.end())
     return nullptr;
 
-  auto it = std::ranges::find(str.begin(), str.end(), c);
+  auto it = std::find(str.begin(), str.end(), c);
   if (it == str.end())
     return nullptr;
 

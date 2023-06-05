@@ -40,14 +40,13 @@ void HttpObject::setData(std::string_view data) { this->data = data; }
 
 std::string_view HttpObject::requestTypeToString(RequestType type) {
   switch (type) {
-    using enum Lyli::Server::HTTP::RequestType;
-  case GET:
+  case RequestType::GET:
     return "GET";
-  case POST:
+  case RequestType::POST:
     return "POST";
-  case PATCH:
+  case RequestType::PATCH:
     return "PATCH";
-  case DELETE:
+  case RequestType::DELETE:
     return "DELETE";
   default:
     return "";

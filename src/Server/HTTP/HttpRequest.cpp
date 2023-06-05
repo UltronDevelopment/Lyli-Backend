@@ -65,7 +65,7 @@ bool HttpRequest::firstParse(std::string_view data) {
     return false;
 
   this->request_type =
-      this->checkRequestType(std::string_view(data.cbegin(), ptr1));
+      this->checkRequestType(std::string(data.cbegin(), ptr1));
 
   if (this->request_type == RequestType::NONE) {
     return false;
@@ -105,7 +105,7 @@ std::pair<bool, const char *> HttpRequest::headerParse(std::string_view data) {
         i++;
 
       this->header[name_buffer] =
-          std::string_view(start.data() + vbeg, start.data() + i);
+          std::string(start.data() + vbeg, start.data() + i);
     }
 
     if (start.at(i) == '\n') {
@@ -136,20 +136,19 @@ bool HttpRequest::dataParse(std::string_view data) {
 }
 
 RequestType HttpRequest::checkRequestType(std::string_view data) const {
-  using enum Lyli::Server::HTTP::RequestType;
   if (data == "GET")
-    return GET;
+    return RequestType::GET;
 
   if (data == "POST")
-    return POST;
+    return RequestType::POST;
 
   if (data == "PATCH")
-    return PATCH;
+    return RequestType::PATCH;
 
   if (data == "DELETE")
-    return DELETE;
+    return RequestType::DELETE;
 
-  return NONE;
+  return RequestType::NONE;
 }
 
 std::shared_ptr<HttpRequest> HttpRequest::create(std::string_view data) {
