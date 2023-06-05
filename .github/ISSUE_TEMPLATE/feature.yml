@@ -1,0 +1,14 @@
+name: Feature
+description: Suggest a new feature to make Lyli's backend even more functional.
+title: '[Feature] '
+labels: ['feature']
+assignees:
+  - 'MINAqwq'
+body:
+  - type: textarea
+    id: what-feature
+    attributes:
+      label: Describe the feature
+      description: Describe the feature. You can also describe the implementation and the exact functionality here.
+    validations:
+      required: true
