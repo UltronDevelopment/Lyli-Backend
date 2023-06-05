@@ -3,22 +3,28 @@
 ### Install Dependencies
 - cmake
 - nlohmann json
-- asio
+- boost
 
+#### Debian
+`apt install cmake nlohmann-json3-dev libboost-dev`
 
 #### Pacman
-`pacman -S cmake nlohmann-json asio`
+`pacman -S cmake nlohmann-json boost`
 
 #### Portage
-`emerge -aq dev-util/cmake dev-cpp/asio dev-cpp/nlohmann_json`
+`emerge -av dev-util/cmake dev-cpp/asio dev-cpp/nlohmann_json dev-libs/boost`
 
-### Debug Build
+### Release Build (and run haha)
 ```sh
-mkdir build
-cd build
-cmake .. -DLOG_DEBUG=ON -DLOG_TRACE=ON
-cmake --build .
+./scripts/build-and-run.sh
 ```
+### Debug Build (without run :c)
+```sh
+mkdir -p build
+cmake -S . -B ./build -DDEBUG=1
+cmake --build ./build
+```
+
 ### File Layout
 - Header Comment
 - Preprocessor
