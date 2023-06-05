@@ -28,6 +28,7 @@ ENDIF(DEBUG)
 add_compile_options(-Wall -O2)
 
 add_executable(lyli-backend
+    src/API/Handler/Ping.cpp
     src/API/Router.cpp
     src/Dotenv/Loader.cpp
     src/Dotenv/Parser.cpp

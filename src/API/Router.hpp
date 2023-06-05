@@ -20,6 +20,7 @@
 //
 
 #include <Server/HTTP/HttpRequest.hpp>
+#include <Server/HTTP/HttpResponse.hpp>
 
 #include <functional>
 #include <map>
@@ -28,15 +29,16 @@
 namespace Lyli::API {
 class Router {
 public:
-  using Handler = std::string (*)(
-      const std::shared_ptr<Server::HTTP::HttpRequest> &request);
+  using RequestHandler =
+      std::function<std::shared_ptr<Server::HTTP::HttpResponse>(
+          const std::shared_ptr<Server::HTTP::HttpRequest> &request)>;
 
   static Router &getInstance();
 
   void setup();
 
   /* set all routes to their handler */
-  Handler route(std::string_view path) const;
+  RequestHandler route(std::string_view path) const;
 
   /* delete move and copy constructor to ensure there can only be a single
    * instance */
@@ -48,9 +50,11 @@ public:
 private:
   Router();
 
-  static std::string
+  bool addRoute(std::string_view route, const RequestHandler &handler);
+
+  static std::shared_ptr<Server::HTTP::HttpResponse>
   notFound(const std::shared_ptr<Server::HTTP::HttpRequest> &request);
 
-  std::map<std::string_view, Handler, std::less<>> routes;
+  std::map<std::string_view, RequestHandler, std::less<>> routes;
 };
 } // namespace Lyli::API
