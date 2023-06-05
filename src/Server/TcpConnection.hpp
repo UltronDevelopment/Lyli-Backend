@@ -51,6 +51,7 @@ private:
 
   void handle_write(const boost::system::error_code &code, size_t bytes) const;
 
+  [[maybe_unused]] boost::asio::io_context &io;
   boost::asio::ip::tcp::socket _socket;
   std::string _rdbuf;
 };
