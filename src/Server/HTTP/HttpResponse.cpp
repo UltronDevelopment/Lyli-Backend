@@ -33,8 +33,8 @@ std::string HttpResponse::toString() const {
   std::stringstream buffer;
 
   /* version and status code */
-  buffer << "HTTP/1.1" << static_cast<std::uint16_t>(this->code)
-         << HttpResponse::codeToString(this->code) << "\r\n";
+  buffer << "HTTP/1.1 " << static_cast<std::uint16_t>(this->code)
+         << ' ' <<HttpResponse::codeToString(this->code) << "\r\n";
 
   /* header */
   for (const auto &[name, value] : this->header) {
