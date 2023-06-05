@@ -1,0 +1,19 @@
+name: Bug
+description: Report a bug to improve Lyli's backend.
+title: '[Bug] '
+labels: ['bug']
+assignees:
+  - 'MINAqwq'
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug you encountered.
+    validations:
+      required: true
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional information
+      description: Give us additional information that could help us reproduce the bug. You can also attach screenshots or videos.
