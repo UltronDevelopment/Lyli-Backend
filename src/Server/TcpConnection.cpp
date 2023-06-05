@@ -36,11 +36,11 @@
 #include <Utils/Logger.hpp>
 
 #include <memory>
+#include <string>
 #include <string_view>
 
 namespace Lyli::Server {
-TcpConnection::TcpConnection(boost::asio::io_context &io)
-    : io(io), _socket(io) {}
+TcpConnection::TcpConnection(boost::asio::io_context &io) : _socket(io) {}
 TcpConnection::~TcpConnection() = default;
 
 boost::asio::ip::tcp::socket &TcpConnection::getSocket() {
@@ -68,7 +68,7 @@ void TcpConnection::read() {
 }
 
 void TcpConnection::handle_write(const boost::system::error_code &code,
-                                 size_t bytes) const {
+                                 [[maybe_unused]] size_t bytes) const {
   const auto &logger = Utils::Logger::getInstance();
 
   if (code.failed()) {
@@ -79,7 +79,7 @@ void TcpConnection::handle_write(const boost::system::error_code &code,
 
 void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
                             const boost::system::error_code &code,
-                            size_t bytes) {
+                            [[maybe_unused]] size_t bytes) {
   const auto &adress = con->_socket.remote_endpoint().address().to_string();
 
   if (code.failed()) {
@@ -97,10 +97,12 @@ void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
   }
 
   /* log RequestType and Path */
-  Utils::Logger::getInstance().trace(
-      "[" + adress + "] " +
-      HTTP::HttpRequest::requestTypeToString(req->getRequestType()).data() +
-      ' ' + req->getPath().data());
+  if (adress != "127.0.0.1") {
+    Utils::Logger::getInstance().trace(
+        "[" + adress + "] " +
+        HTTP::HttpRequest::requestTypeToString(req->getRequestType()).data() +
+        ' ' + req->getPath().data());
+  }
 
   /* get handler function as function ptr */
   auto handler = API::Router::getInstance().route(req->getPath());

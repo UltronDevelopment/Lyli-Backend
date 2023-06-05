@@ -25,7 +25,7 @@ else()
     add_definitions(-DLOG_DEBUG=0)
 ENDIF(DEBUG)
 
-add_compile_options(-Wall -O2)
+add_compile_options(-Wall -Wextra -Werror -O2)
 
 add_executable(lyli-backend
     src/API/Handler/Ping.cpp

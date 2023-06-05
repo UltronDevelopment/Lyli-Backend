@@ -41,8 +41,6 @@ bool HttpRequest::parse(std::string_view data) {
   if (!this->firstParse(data))
     return false;
 
-  Utils::Logger::getInstance().debug("HTTP: Parse Header");
-
   auto [passed, data_ptr] = this->headerParse(data);
   if (!passed || data_ptr == nullptr)
     return false;
@@ -64,8 +62,7 @@ bool HttpRequest::firstParse(std::string_view data) {
   if (ptr1 == nullptr)
     return false;
 
-  this->request_type =
-      this->checkRequestType(std::string(data.cbegin(), ptr1));
+  this->request_type = this->checkRequestType(std::string(data.cbegin(), ptr1));
 
   if (this->request_type == RequestType::NONE) {
     return false;
@@ -128,7 +125,8 @@ bool HttpRequest::dataParse(std::string_view data) {
     return true;
 
   this->data = data;
-  if (this->data.size() != std::stoi(this->header.at("Content-Length")))
+  if (this->data.size() !=
+      static_cast<std::size_t>(std::stoi(this->header.at("Content-Length"))))
     return false;
 
   Utils::Logger::getInstance().debug("Got data successful");

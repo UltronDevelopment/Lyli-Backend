@@ -23,6 +23,7 @@
 #include <Server/HTTP/HttpResponse.hpp>
 #include <Utils/HttpUtils.hpp>
 #include <Utils/Logger.hpp>
+
 #include <memory>
 
 namespace Lyli::API::Handler {
@@ -32,8 +33,6 @@ std::shared_ptr<Server::HTTP::HttpResponse> ping([
   auto resp = Server::HTTP::HttpResponse::create();
   if (resp == nullptr)
     return nullptr;
-
-  Utils::Logger::getInstance().debug("lol");
 
   /* respond with 204 no content */
   resp->setCode(Server::HTTP::ResponseCode::NO_CONTENT);
