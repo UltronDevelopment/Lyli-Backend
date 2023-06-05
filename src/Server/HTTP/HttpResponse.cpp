@@ -21,6 +21,7 @@
 
 #include <Server/HTTP/HttpResponse.hpp>
 
+#include <memory>
 #include <sstream>
 
 namespace Lyli::Server::HTTP {
@@ -33,8 +34,8 @@ std::string HttpResponse::toString() const {
   std::stringstream buffer;
 
   /* version and status code */
-  buffer << "HTTP/1.1 " << static_cast<std::uint16_t>(this->code)
-         << ' ' <<HttpResponse::codeToString(this->code) << "\r\n";
+  buffer << "HTTP/1.1 " << static_cast<std::uint16_t>(this->code) << ' '
+         << HttpResponse::codeToString(this->code) << "\r\n";
 
   /* header */
   for (const auto &[name, value] : this->header) {
@@ -49,12 +50,18 @@ std::string HttpResponse::toString() const {
 
 std::string_view HttpResponse::codeToString(ResponseCode code) {
   switch (code) {
-  case ResponseCode::NOT_FOUND:
-    return "NOT FOUND";
   case ResponseCode::OK:
     return "OK";
+  case ResponseCode::NO_CONTENT:
+    return "NO CONTENT";
+  case ResponseCode::NOT_FOUND:
+    return "NOT FOUND";
   default:
     return "NONE";
   }
+}
+
+std::shared_ptr<HttpResponse> HttpResponse::create() {
+  return std::make_shared<HttpResponse>();
 }
 } // namespace Lyli::Server::HTTP

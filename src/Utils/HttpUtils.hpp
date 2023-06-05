@@ -1,7 +1,7 @@
 // This file is part of the Lyli Backend
-// File:    Server/HTTP/HttpResponse.hpp
+// File:    Utils/HttpUtils.hpp
 // Author:  Mina <mina@upndevelopment.de>
-// Date:    04 June 2023
+// Date:    05 June 2023
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -22,34 +22,16 @@
 #pragma once
 
 #include <Server/HTTP/HttpObject.hpp>
+#include <Utils/FormattedTime.hpp>
 
-#include <cstdint>
 #include <memory>
-#include <string_view>
 
-namespace Lyli::Server::HTTP {
+namespace Lyli::Utils::HttpUtils {
 
-enum class ResponseCode : std::uint16_t {
-  OK = 200,
-  NO_CONTENT = 204,
-  NOT_FOUND = 404
-};
-
-class HttpResponse : public HttpObject {
-public:
-  HttpResponse();
-  ~HttpResponse();
-
-  void setCode(ResponseCode code);
-
-  std::string toString() const;
-
-  static std::string_view codeToString(ResponseCode code);
-
-  /* allocate an empty HttpResponse */
-  static std::shared_ptr<HttpResponse> create();
-
-private:
-  ResponseCode code;
-};
-} // namespace Lyli::Server::HTTP
+void inline basicHeader(
+    const std::shared_ptr<Server::HTTP::HttpObject> &object) {
+  object->setHeaderValue("Data", Utils::FormattedTime::HTTP());
+  object->setHeaderValue("Connection", "close");
+  object->setHeaderValue("Server", "Lyli-Backend");
+}
+} // namespace Lyli::Utils::HttpUtils

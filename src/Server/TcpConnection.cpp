@@ -19,6 +19,7 @@
 // (c) 2023 UPN
 //
 
+#include <Utils/HttpUtils.hpp>
 #include <boost/asio/completion_condition.hpp>
 #include <boost/asio/error.hpp>
 #include <boost/asio/placeholders.hpp>
@@ -47,17 +48,8 @@ boost::asio::ip::tcp::socket &TcpConnection::getSocket() {
 }
 
 void TcpConnection::write(std::string_view data) {
-  Lyli::Server::HTTP::HttpResponse resp{};
-  resp.setCode(Lyli::Server::HTTP::ResponseCode::OK);
-  resp.setData(data);
-
-  resp.setHeaderValue("date", Lyli::Utils::FormattedTime::HTTP());
-  resp.setHeaderValue("server", "lyli-backend");
-  resp.setHeaderValue("Content-Type", "application/json; charset=utf-8");
-  resp.setHeaderValue("connection", "close");
-
   boost::asio::async_write(
-      this->_socket, boost::asio::buffer(resp.toString()),
+      this->_socket, boost::asio::buffer(data),
       boost::bind(&TcpConnection::handle_write, this,
                   boost::asio::placeholders::error,
                   boost::asio::placeholders::bytes_transferred));
@@ -111,7 +103,7 @@ void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
       ' ' + req->getPath().data());
 
   /* get handler function as function ptr */
-  auto *handler = API::Router::getInstance().route(req->getPath());
+  auto handler = API::Router::getInstance().route(req->getPath());
 
   /* it should be impossible that handler is null here, but just in case */
   if (handler == nullptr) {
@@ -122,7 +114,13 @@ void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
     return;
   }
 
-  Utils::Logger::getInstance().debug(handler(req));
-  con->write(R"({"id": 0, "isHurensohn": true})");
+  auto resp = handler(req);
+
+  /* reset connection if null */
+  if (resp == nullptr)
+    return;
+
+  /* send response to client */
+  con->write(resp->toString());
 }
 } // namespace Lyli::Server
