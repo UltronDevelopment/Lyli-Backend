@@ -96,8 +96,10 @@ void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
     return;
   }
 
-  if (auto x_ip = req->getHeaderValue("X-Real-IP"); !x_ip.empty())
+  if (auto x_ip = req->getHeaderValue("X-Real-IP"); !x_ip.empty()) {
+    x_ip.remove_suffix('\r');
     address = x_ip;
+  }
 
   if (address != "127.0.0.1") {
     Utils::Logger::getInstance().trace(
