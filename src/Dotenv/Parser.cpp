@@ -48,7 +48,7 @@ void Parser::parse(std::string_view data) {
         i++;
 
       this->vars[name_buffer] =
-          std::string(data.data() + vbeg, (data.data() + i) - 1);
+          std::string(data.data() + vbeg, (data.data() + i));
       Utils::Logger::getInstance().debug("Parsed value from: " + name_buffer);
     }
 
