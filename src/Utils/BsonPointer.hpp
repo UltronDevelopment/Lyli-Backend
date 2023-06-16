@@ -1,7 +1,7 @@
 // This file is part of the Lyli Backend
-// File:    Utils/StringUtils.hpp
+// File:    Utils/BsonPointer.hpp
 // Author:  Mina <mina@upndevelopment.de>
-// Date:    30 May 2023
+// Date:    13 June 2023
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -21,19 +21,14 @@
 
 #pragma once
 
-#include <algorithm>
-#include <string_view>
+#include <bson/bson.h>
 
-namespace Lyli::Utils::StringUtils {
-/* get the position from the next byte with the value @c in @str as iterator */
-inline const char *ptrToNext(std::string_view str, char c) {
-  if (str.begin() + 1 == str.end())
-    return nullptr;
+#include <memory>
 
-  auto it = std::find(str.begin(), str.end(), c);
-  if (it == str.end())
-    return nullptr;
+namespace Lyli::Utils::BsonPointer {
+using BsonDelete = struct BsonDelete {
+  void operator()(bson_t *x) const { bson_destroy(x); }
+};
 
-  return it;
-}
-} // namespace Lyli::Utils::StringUtils
+using Bson = std::unique_ptr<bson_t, BsonDelete>;
+} // namespace Lyli::Utils::BsonPointer

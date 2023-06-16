@@ -22,6 +22,7 @@
 #include <boost/asio/io_context.hpp>
 
 #include <API/Router.hpp>
+#include <DB/Client.hpp>
 #include <Dotenv/Loader.hpp>
 #include <Server/TcpServer.hpp>
 #include <Utils/Logger.hpp>
@@ -38,6 +39,27 @@ static inline void loadEnv() {
   loader.load(".env");
 }
 
+static inline void startDatabase() {
+  logger.trace("Start DB Driver...");
+
+  auto &client = Lyli::DB::Client::getInstance();
+  const char *srv = getenv("MONGO_SRV");
+
+  if (srv == nullptr) {
+    logger.error("No SRV");
+    exit(1);
+  }
+
+  /* init db client */
+  client.create(getenv("APPLICATION_NAME"), srv);
+  if (!client.isValid())
+    exit(1);
+
+  /* open a database and a collection */
+  auto db{client.openDB(getenv("DB_NAME"))};
+  db->openCollection(getenv("USER_COLLECTION_NAME"));
+}
+
 static inline void startServer() {
   /* setup router */
   logger.trace("Setup Router...");
@@ -50,6 +72,7 @@ static inline void startServer() {
 
 int main() {
   loadEnv();
+  startDatabase();
   startServer();
 
   return 0;

@@ -1,7 +1,7 @@
 // This file is part of the Lyli Backend
-// File:    Utils/StringUtils.hpp
+// File:    DB/Collection.hpp
 // Author:  Mina <mina@upndevelopment.de>
-// Date:    30 May 2023
+// Date:    16 June 2023
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -21,19 +21,28 @@
 
 #pragma once
 
-#include <algorithm>
+#include <nlohmann/json.hpp>
+
+#include <mongoc/mongoc.h>
+
+#include <Utils/MongoPointer.hpp>
+
 #include <string_view>
 
-namespace Lyli::Utils::StringUtils {
-/* get the position from the next byte with the value @c in @str as iterator */
-inline const char *ptrToNext(std::string_view str, char c) {
-  if (str.begin() + 1 == str.end())
-    return nullptr;
+namespace Lyli::DB {
+class Collection {
+public:
+  explicit Collection(std::string_view name, mongoc_database_t *db);
+  ~Collection();
 
-  auto it = std::find(str.begin(), str.end(), c);
-  if (it == str.end())
-    return nullptr;
+  std::string_view getName() const;
 
-  return it;
-}
-} // namespace Lyli::Utils::StringUtils
+  nlohmann::json searchDocument(const bson_t *query, std::uint32_t limit) const;
+
+  bool insertDocument(const bson_t *document) const;
+
+private:
+  std::string_view name;
+  Utils::MongoPointer::Collection collection;
+};
+} // namespace Lyli::DB

@@ -1,7 +1,7 @@
 // This file is part of the Lyli Backend
-// File:    Utils/StringUtils.hpp
+// File:    DB/Database.hpp
 // Author:  Mina <mina@upndevelopment.de>
-// Date:    30 May 2023
+// Date:    13 June 2023
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -19,21 +19,30 @@
 // (c) 2023 UPN
 //
 
-#pragma once
+#include <DB/Collection.hpp>
+#include <Utils/MongoPointer.hpp>
 
-#include <algorithm>
-#include <string_view>
+#include <memory>
+#include <vector>
 
-namespace Lyli::Utils::StringUtils {
-/* get the position from the next byte with the value @c in @str as iterator */
-inline const char *ptrToNext(std::string_view str, char c) {
-  if (str.begin() + 1 == str.end())
-    return nullptr;
+namespace Lyli::DB {
+class Database {
+public:
+  explicit Database(const std::string &name);
+  ~Database();
 
-  auto it = std::find(str.begin(), str.end(), c);
-  if (it == str.end())
-    return nullptr;
+  bool ping() const;
 
-  return it;
-}
-} // namespace Lyli::Utils::StringUtils
+  void openCollection(const std::string &collection_name);
+
+  std::shared_ptr<Collection>
+  getCollection(std::string_view collection_name) const;
+
+  std::string_view getName() const;
+
+private:
+  std::string name;
+  Utils::MongoPointer::Database database;
+  std::vector<std::shared_ptr<Collection>> collections;
+};
+} // namespace Lyli::DB

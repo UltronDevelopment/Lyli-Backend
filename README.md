@@ -3,22 +3,19 @@
 
 ## 1️⃣ Install Dependencies
 - cmake
-- nlohmann json
+- nlohmann_json
 - boost
+- mongoc
+- bson
 
 ### Apt
 ```sh
-apt install cmake nlohmann-json3-dev libboost-dev
+apt install cmake nlohmann-json3-dev libboost-dev libbson-dev libmongoc-dev
 ```
 
-### Pacman
+### mongoc linking hack (only required on ubuntu 20.04)
 ```sh
-pacman -S cmake nlohmann-json boost
-```
-
-### Portage
-```sh
-emerge -av dev-util/cmake dev-cpp/asio dev-cpp/nlohmann_json dev-libs/boost
+sed -i 's/foreach\(.*\)_IMPORT_CHECK_TARGETS\(.*\)/foreach\1_IMPORT_CHECK_TARGETS\2 \n break()/g' /usr/lib/x86_64-linux-gnu/cmake/mongoc-1.0/mongoc-targets.cmake
 ```
 
 ## 2️⃣ Build & run
