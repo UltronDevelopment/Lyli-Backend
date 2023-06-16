@@ -106,6 +106,11 @@ void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
         "[" + address + "] " +
         HTTP::HttpRequest::requestTypeToString(req->getRequestType()).data() +
         ' ' + req->getPath().data());
+  } else {
+    Utils::Logger::getInstance().debug(
+        "[" + address + "] " +
+        HTTP::HttpRequest::requestTypeToString(req->getRequestType()).data() +
+        ' ' + req->getPath().data());
   }
 
   /* get handler function as function ptr */
