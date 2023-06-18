@@ -25,8 +25,10 @@
 #include <DB/Client.hpp>
 #include <Dotenv/Loader.hpp>
 #include <Server/TcpServer.hpp>
+#include <Signals/SignalHandler.hpp>
 #include <Utils/Logger.hpp>
 
+#include <csignal>
 #include <cstdlib>
 #include <string_view>
 
@@ -74,9 +76,14 @@ static inline void startServer() {
   logger.trace("TCP Server starting...");
   Lyli::Server::TcpServer::start();
 }
+
+void setupSigals() {
+  Lyli::Utils::Logger::getInstance().debug("Signal Handler Setup...");
+  signal(SIGINT, Lyli::SignalHandler::gracefullShutdown);
 }
 
 int main() {
+  setupSigals();
   loadEnv();
   startDatabase();
   startServer();

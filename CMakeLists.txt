@@ -44,6 +44,7 @@ add_executable(lyli-backend
     src/Server/HTTP/HttpResponse.cpp
     src/Server/TcpServer.cpp
     src/Server/TcpConnection.cpp
+    src/Signals/SignalHandler.cpp
     src/Utils/FormattedTime.cpp
     src/Utils/Logger.cpp
     src/main.cpp
