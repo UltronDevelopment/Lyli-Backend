@@ -78,12 +78,24 @@ std::shared_ptr<Database> Client::getDatabase(std::string_view db_name) const {
 }
 
 void Client::close() {
+  if (!this->valid)
+    return;
+
   Utils::Logger::getInstance().debug("DB Driver Cleanup");
+  this->databases.clear();
   mongoc_cleanup();
   this->valid = false;
 }
 
-Client::Client() { mongoc_init(); };
+Client::Client() {
+  if (this->valid)
+    return;
 
-Client::~Client() { this->close(); };
+  mongoc_init();
+};
+
+Client::~Client() {
+  if (this->valid)
+    this->close();
+};
 } // namespace Lyli::DB
