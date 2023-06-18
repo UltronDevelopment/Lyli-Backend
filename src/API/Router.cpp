@@ -20,6 +20,7 @@
 //
 
 #include <API/Handler/Ping.hpp>
+#include <API/Handler/Register.hpp>
 #include <API/Router.hpp>
 #include <Server/HTTP/HttpResponse.hpp>
 #include <Utils/HttpUtils.hpp>
@@ -48,6 +49,10 @@ void Router::setup() {
   /* /ping */
   if (this->addRoute("/ping", Handler::ping))
     logger.error("failed to create route: /ping");
+
+  /* /register */
+  if (this->addRoute("/register", Handler::handle_register))
+    logger.error("failed to create route: /register");
 
   Utils::Logger::getInstance().debug("Router setup completed");
 }

@@ -32,6 +32,7 @@ add_compile_options(-Wall -Wextra -Werror -O2)
 
 add_executable(lyli-backend
     src/API/Handler/Ping.cpp
+    src/API/Handler/Register.cpp
     src/API/Router.cpp
     src/DB/Client.cpp
     src/DB/Collection.cpp

@@ -118,6 +118,7 @@ void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
 
   /* it should be impossible that handler is null here, but just in case */
   if (handler == nullptr) {
+    /* TODO: Return Code 418 to client or send penguin */
     Utils::Logger::getInstance().error(
         "Found no handler (that is fucking bad and should be fixed RIGHT "
         "NOW)");
