@@ -32,7 +32,7 @@
 namespace Lyli::DB {
 class Collection {
 public:
-  explicit Collection(std::string_view name, mongoc_database_t *db);
+  explicit Collection(const std::string &name, mongoc_database_t *db);
   ~Collection();
 
   std::string_view getName() const;
@@ -42,7 +42,7 @@ public:
   bool insertDocument(const bson_t *document) const;
 
 private:
-  std::string_view name;
+  std::string name;
   Utils::MongoPointer::Collection collection;
 };
 } // namespace Lyli::DB

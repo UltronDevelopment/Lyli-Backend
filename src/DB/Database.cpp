@@ -62,16 +62,17 @@ bool Database::ping() const {
 }
 
 void Database::openCollection(const std::string &collection_name) {
-  Utils::Logger::getInstance().debug("Open collection: " + collection_name);
   this->collections.push_back(
       std::make_shared<Collection>(collection_name, this->database.get()));
 }
 
 std::shared_ptr<Collection>
 Database::getCollection(std::string_view collection_name) const {
+  Utils::Logger::getInstance().debug(collection_name);
   auto it{
       std::find_if(this->collections.cbegin(), this->collections.cend(),
                    [&collection_name](const std::shared_ptr<Collection> &c) {
+                     Utils::Logger::getInstance().debug(c->getName());
                      return c->getName() == collection_name;
                    })};
 

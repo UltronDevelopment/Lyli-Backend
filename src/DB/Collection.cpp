@@ -27,9 +27,10 @@
 #include <Utils/MongoPointer.hpp>
 
 #include <cstddef>
+#include <string>
 
 namespace Lyli::DB {
-Collection::Collection(std::string_view name, mongoc_database_t *db)
+Collection::Collection(const std::string &name, mongoc_database_t *db)
     : name(name), collection(mongoc_database_get_collection(db, name.data())) {}
 
 std::string_view Collection::getName() const { return this->name; }
@@ -71,8 +72,8 @@ bool Collection::insertDocument(const bson_t *document) const {
     return false;
 
   if (bson_error_t error;
-      mongoc_collection_insert(this->collection.get(), MONGOC_INSERT_NONE,
-                               document, nullptr, &error)) {
+      !mongoc_collection_insert(this->collection.get(), MONGOC_INSERT_NONE,
+                                document, nullptr, &error)) {
     Utils::Logger::getInstance().error(error.message);
     return false;
   }
