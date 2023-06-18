@@ -39,7 +39,10 @@ void HttpObject::setHeaderValue(const std::string &key,
   this->header[key] = value;
 }
 
-void HttpObject::setData(std::string_view data) { this->data = data; }
+void HttpObject::setData(std::string_view data) {
+  this->data = data;
+  this->setHeaderValue("Content-Lenght", std::to_string(data.size()));
+}
 
 std::string_view HttpObject::requestTypeToString(RequestType type) {
   switch (type) {
