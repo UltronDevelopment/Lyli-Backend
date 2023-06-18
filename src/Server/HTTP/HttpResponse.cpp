@@ -54,8 +54,12 @@ std::string_view HttpResponse::codeToString(ResponseCode code) {
     return "OK";
   case ResponseCode::NO_CONTENT:
     return "NO CONTENT";
+  case ResponseCode::BAD_REQUEST:
+    return "BAD_REQUEST";
   case ResponseCode::NOT_FOUND:
     return "NOT FOUND";
+  case ResponseCode::METHOD_NOT_ALLOWED:
+    return "METHOD NOT ALLOWED";
   default:
     return "NONE";
   }
