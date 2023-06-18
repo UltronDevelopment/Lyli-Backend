@@ -41,10 +41,10 @@ public:
   getCollection(std::string_view collection_name) const;
 
   std::string_view getName() const;
-  std::vector<std::shared_ptr<Collection>> collections;
 
 private:
   std::string name;
   Utils::MongoPointer::Database database;
+  std::vector<std::shared_ptr<Collection>> collections;
 };
 } // namespace Lyli::DB
