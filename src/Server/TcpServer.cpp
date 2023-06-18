@@ -31,24 +31,42 @@ namespace Lyli::Server {
 TcpServer::TcpServer()
     : io(boost::asio::io_context{10}),
       _acceptor(io, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),
-                                                   port)) {
-  /* start listener */
-  Utils::Logger::getInstance().trace("TcpServer init listener");
-  this->listen();
-
-  Utils::Logger::getInstance().trace("TcpServer io.run()");
-  this->io.run();
-}
+                                                   port)) {}
 
 TcpServer::~TcpServer() = default;
 
+TcpServer &TcpServer::getInstance() {
+  static TcpServer instance;
+  return instance;
+}
+
+void TcpServer::start() {
+  auto &server{TcpServer::getInstance()};
+
+  /* start listener */
+  Utils::Logger::getInstance().trace("TcpServer init listener");
+  server.listen();
+
+  Utils::Logger::getInstance().trace("TcpServer io.run()");
+  server.io.run();
+}
+
 void TcpServer::listen() {
+  auto &server{TcpServer::getInstance()};
+
   auto connection = TcpConnection::create(this->io);
 
-  this->_acceptor.async_accept(connection->getSocket(),
-                               boost::bind(&TcpServer::handle_accept, this,
-                                           connection,
-                                           boost::asio::placeholders::error));
+  server._acceptor.async_accept(connection->getSocket(),
+                                boost::bind(&TcpServer::handle_accept, this,
+                                            connection,
+                                            boost::asio::placeholders::error));
+}
+
+void TcpServer::stop() {
+  auto &server{TcpServer::getInstance()};
+
+  Utils::Logger::getInstance().trace("TCP Server STOP");
+  server.io.stop();
 }
 
 void TcpServer::handle_accept(std::shared_ptr<TcpConnection> &connection,

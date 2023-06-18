@@ -30,12 +30,23 @@
 namespace Lyli::Server {
 class TcpServer {
 public:
+  static TcpServer &getInstance();
+
+  static void start();
+
+  static void stop();
+
+  TcpServer(const TcpServer &) = delete;
+  TcpServer &operator=(const TcpServer &) = delete;
+  TcpServer(TcpServer &&) = delete;
+  TcpServer &operator=(TcpServer &&) = delete;
+
+private:
   TcpServer();
   ~TcpServer();
 
   void listen();
 
-private:
   void handle_accept(std::shared_ptr<TcpConnection> &connection,
                      const boost::system::error_code &error);
 

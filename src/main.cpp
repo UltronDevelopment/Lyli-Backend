@@ -72,7 +72,8 @@ static inline void startServer() {
 
   /* start server */
   logger.trace("TCP Server starting...");
-  Lyli::Server::TcpServer server{};
+  Lyli::Server::TcpServer::start();
+}
 }
 
 int main() {
