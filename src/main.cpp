@@ -43,7 +43,7 @@ static inline void startDatabase() {
   logger.trace("Start DB Driver...");
 
   auto &client = Lyli::DB::Client::getInstance();
-  const char *srv = getenv("MONGO_SRV");
+  const char *srv = std::getenv("MONGO_SRV");
 
   if (srv == nullptr) {
     logger.error("No SRV");
@@ -51,13 +51,18 @@ static inline void startDatabase() {
   }
 
   /* init db client */
-  client.create(getenv("APPLICATION_NAME"), srv);
+  client.create(std::getenv("APPLICATION_NAME"), srv);
   if (!client.isValid())
     exit(1);
 
   /* open a database and a collection */
-  auto db{client.openDB(getenv("DB_NAME"))};
-  db->openCollection(getenv("USER_COLLECTION_NAME"));
+  auto db{client.openDB(std::getenv("DB_NAME"))};
+  if (db == nullptr) {
+    logger.error("Faile to Open Database " +
+                 std::string(std::getenv("DB_NAME")));
+    exit(1);
+  }
+  db->openCollection(std::getenv("USER_COLLECTION"));
 }
 
 static inline void startServer() {
