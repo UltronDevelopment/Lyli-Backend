@@ -51,7 +51,7 @@ public:
 
 private:
   /* generate a sha1 hash */
-  std::array<std::uint8_t, SHA_DIGEST_LENGTH>
+  std::pair<std::array<std::uint8_t, SHA_DIGEST_LENGTH>, bool>
   sha1(const std::string &data) const;
 
   /* convert a sha1 hash to a readable string */

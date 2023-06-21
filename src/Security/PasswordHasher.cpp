@@ -81,7 +81,11 @@ std::string PasswordHasher::hashPasswordForStore([
   Utils::Logger::getInstance().debug("PW is now: " + password);
 
   /* hash password */
-  auto hash_string = this->sha1ToString(this->sha1(password));
+  const auto &[hash, succeeded] = this->sha1(password);
+  if (!succeeded)
+    return "";
+
+  auto hash_string = this->sha1ToString(hash);
 
   Utils::Logger::getInstance().debug("Hash: " + hash_string);
 
@@ -97,30 +101,35 @@ std::string PasswordHasher::hashPassword(std::string password,
   password.append(salt);
   password.insert(password.cend(), pepper);
 
-  return this->sha1ToString(this->sha1(password));
+  /* hash password */
+  const auto &[hash, succeeded] = this->sha1(password);
+  if (!succeeded)
+    return "";
+
+  return this->sha1ToString(hash);
 }
 
-std::array<std::uint8_t, SHA_DIGEST_LENGTH>
+std::pair<std::array<std::uint8_t, SHA_DIGEST_LENGTH>, bool>
 PasswordHasher::sha1(const std::string &data) const {
   std::array<std::uint8_t, SHA_DIGEST_LENGTH> buffer;
 
   SHA_CTX ctx;
   if (!SHA1_Init(&ctx)) {
     Utils::Logger::getInstance().error("OpenSSL Failed SHA_INIT");
-    return {};
+    return {buffer, false};
   }
 
   if (!SHA1_Update(&ctx, data.c_str(), data.size())) {
     Utils::Logger::getInstance().error("OpenSSL Failed SHA_Update");
-    return {};
+    return {buffer, false};
   }
 
   if (!SHA1_Final(buffer.data(), &ctx)) {
     Utils::Logger::getInstance().error("OpenSSL Failed SHA_Final");
-    return {};
+    return {buffer, false};
   }
 
-  return buffer;
+  return {buffer, true};
 }
 
 std::string PasswordHasher::extractSalt(std::string &hash) const {
