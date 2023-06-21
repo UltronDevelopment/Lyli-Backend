@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(nlohmann_json REQUIRED)
 find_package(mongoc-1.0 1.15 REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 include_directories(src)
 include_directories(/usr/include/libmongoc-1.0)
@@ -39,6 +40,7 @@ add_executable(lyli-backend
     src/DB/Database.cpp
     src/Dotenv/Loader.cpp
     src/Dotenv/Parser.cpp
+    src/Security/PasswordHasher.cpp
     src/Server/HTTP/HttpObject.cpp
     src/Server/HTTP/HttpRequest.cpp
     src/Server/HTTP/HttpResponse.cpp
@@ -51,4 +53,4 @@ add_executable(lyli-backend
     src/Session.cpp
 )
 
-target_link_libraries(lyli-backend PUBLIC nlohmann_json pthread PRIVATE mongo::mongoc_shared)
+target_link_libraries(lyli-backend PUBLIC nlohmann_json pthread PRIVATE OpenSSL::Crypto mongo::mongoc_shared)

@@ -31,6 +31,10 @@ DB::Client &Session::getDatabaseClient() { return this->client; }
 
 API::Router &Session::getApiRouter() { return this->router; }
 
+Security::PasswordHasher &Session::getPasswordHasher() {
+  return this->password_hasher;
+}
+
 Session::Session() = default;
 Session::~Session() = default;
 } // namespace Lyli

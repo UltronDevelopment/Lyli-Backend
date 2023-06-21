@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include "Security/PasswordHasher.hpp"
 #include <API/Router.hpp>
 #include <DB/Client.hpp>
 
@@ -44,6 +45,9 @@ public:
   /* get the api router */
   API::Router &getApiRouter();
 
+  /* get the password hasher */
+  Security::PasswordHasher &getPasswordHasher();
+
 private:
   Session();
   ~Session();
@@ -53,5 +57,8 @@ private:
 
   /* Router */
   API::Router router;
+
+  /* password hasher*/
+  Security::PasswordHasher password_hasher;
 };
 } // namespace Lyli
