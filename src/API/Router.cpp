@@ -32,12 +32,8 @@
 #include <string_view>
 
 namespace Lyli::API {
-Router &Router::getInstance() {
-  static Router instance;
-  return instance;
-}
-
 Router::Router() = default;
+Router::~Router() = default;
 
 bool Router::addRoute(std::string_view route, const RequestHandler &handler) {
   return !routes.try_emplace(route, handler).second;

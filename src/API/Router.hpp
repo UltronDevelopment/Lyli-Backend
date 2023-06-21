@@ -26,6 +26,8 @@
 #include <map>
 #include <string_view>
 
+#pragma once
+
 namespace Lyli::API {
 class Router {
 public:
@@ -33,23 +35,15 @@ public:
       std::function<std::shared_ptr<Server::HTTP::HttpResponse>(
           const std::shared_ptr<Server::HTTP::HttpRequest> &request)>;
 
-  static Router &getInstance();
+  Router();
+  ~Router();
 
   void setup();
 
   /* set all routes to their handler */
   RequestHandler route(std::string_view path) const;
 
-  /* delete move and copy constructor to ensure there can only be a single
-   * instance */
-  Router(const Router &) = delete;
-  Router &operator=(const Router &) = delete;
-  Router(Router &&) = delete;
-  Router &operator=(Router &&) = delete;
-
 private:
-  Router();
-
   bool addRoute(std::string_view route, const RequestHandler &handler);
 
   static std::shared_ptr<Server::HTTP::HttpResponse>

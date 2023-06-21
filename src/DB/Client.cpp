@@ -26,10 +26,17 @@
 #include <memory>
 
 namespace Lyli::DB {
-Client &Client::getInstance() {
-  static Client instance;
-  return instance;
-}
+Client::Client() {
+  if (this->valid)
+    return;
+
+  mongoc_init();
+};
+
+Client::~Client() {
+  if (this->valid)
+    this->close();
+};
 
 void Client::create(const std::string &application_name, std::string_view srv) {
   Utils::MongoPointer::Uri uri{mongoc_uri_new(srv.data())};
@@ -86,16 +93,4 @@ void Client::close() {
   mongoc_cleanup();
   this->valid = false;
 }
-
-Client::Client() {
-  if (this->valid)
-    return;
-
-  mongoc_init();
-};
-
-Client::~Client() {
-  if (this->valid)
-    this->close();
-};
 } // namespace Lyli::DB

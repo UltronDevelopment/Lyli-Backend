@@ -48,6 +48,7 @@ add_executable(lyli-backend
     src/Utils/FormattedTime.cpp
     src/Utils/Logger.cpp
     src/main.cpp
+    src/Session.cpp
 )
 
 target_link_libraries(lyli-backend PUBLIC nlohmann_json pthread PRIVATE mongo::mongoc_shared)

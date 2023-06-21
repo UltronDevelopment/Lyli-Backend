@@ -1,7 +1,7 @@
 // This file is part of the Lyli Backend
-// File:    Signals/SignalHandler.cpp
+// File:    Session.cpp
 // Author:  Mina <mina@upndevelopment.de>
-// Date:    18 June 2023
+// Date:    20 June 2023
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -19,24 +19,18 @@
 // (c) 2023 UPN
 //
 
-#include <DB/Client.hpp>
-#include <Server/TcpServer.hpp>
 #include <Session.hpp>
-#include <Signals/SignalHandler.hpp>
-#include <Utils/Logger.hpp>
 
-#include <cstdio>
-#include <string>
-
-namespace Lyli::SignalHandler {
-void gracefullShutdown(int sig) {
-  std::putc(10, stdout);
-  Utils::Logger::getInstance().trace("Handling Signal " + std::to_string(sig));
-
-  /* Stop TCP Server */
-  Server::TcpServer::stop();
-
-  /* close database connection */
-  Session::getInstance().getDatabaseClient().close();
+namespace Lyli {
+Session &Session::getInstance() {
+  static Session instance;
+  return instance;
 }
-} // namespace Lyli::SignalHandler
+
+DB::Client &Session::getDatabaseClient() { return this->client; }
+
+API::Router &Session::getApiRouter() { return this->router; }
+
+Session::Session() = default;
+Session::~Session() = default;
+} // namespace Lyli

@@ -21,9 +21,9 @@
 
 #pragma once
 
-#include <DB/Client.hpp>
 #include <DB/Collection.hpp>
 #include <DB/Database.hpp>
+#include <Session.hpp>
 #include <Utils/Logger.hpp>
 
 #include <memory>
@@ -32,7 +32,7 @@ namespace Lyli::Utils::DatabaseUtils {
 inline std::shared_ptr<DB::Collection>
 getCollectionFromDB(std::string_view DB_NAME,
                     std::string_view COLLECTION_NAME) {
-  const auto &client{DB::Client::getInstance()};
+  const auto &client{Session::getInstance().getDatabaseClient()};
   if (!client.isValid())
     return nullptr;
 

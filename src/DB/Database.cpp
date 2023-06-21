@@ -19,8 +19,8 @@
 // (c) 2023 UPN
 //
 
-#include <DB/Client.hpp>
 #include <DB/Collection.hpp>
+#include <Session.hpp>
 #include <Utils/BsonPointer.hpp>
 #include <Utils/Logger.hpp>
 
@@ -28,8 +28,10 @@
 
 namespace Lyli::DB {
 Database::Database(const std::string &name)
-    : name(name), database(mongoc_client_get_database(
-                      Client::getInstance().getMongoClient(), name.c_str())) {
+    : name(name),
+      database(mongoc_client_get_database(
+          Session::getInstance().getDatabaseClient().getMongoClient(),
+          name.c_str())) {
   /* according to the API we will always get an DB (we create one if @name
    * dosn't exists), but just to be sure we dont segfault */
   if (database.get() == nullptr) {

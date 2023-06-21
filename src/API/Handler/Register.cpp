@@ -19,6 +19,8 @@
 // (c) 2023 UPN
 //
 
+#include <nlohmann/json.hpp>
+
 #include <bson/bson.h>
 
 #include <API/Handler/Register.hpp>
@@ -31,7 +33,6 @@
 
 #include <cstddef>
 #include <cstdlib>
-#include <nlohmann/json.hpp>
 
 namespace Lyli::API::Handler {
 bool addUser(const bson_t *document) {

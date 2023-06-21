@@ -19,7 +19,6 @@
 // (c) 2023 UPN
 //
 
-#include <Utils/HttpUtils.hpp>
 #include <boost/asio/completion_condition.hpp>
 #include <boost/asio/error.hpp>
 #include <boost/asio/placeholders.hpp>
@@ -28,11 +27,12 @@
 #include <boost/asio/write.hpp>
 #include <boost/bind/bind.hpp>
 
-#include <API/Router.hpp>
 #include <Server/HTTP/HttpRequest.hpp>
 #include <Server/HTTP/HttpResponse.hpp>
 #include <Server/TcpConnection.hpp>
+#include <Session.hpp>
 #include <Utils/FormattedTime.hpp>
+#include <Utils/HttpUtils.hpp>
 #include <Utils/Logger.hpp>
 
 #include <memory>
@@ -114,7 +114,7 @@ void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
   }
 
   /* get handler function as function ptr */
-  auto handler = API::Router::getInstance().route(req->getPath());
+  auto handler = Session::getInstance().getApiRouter().route(req->getPath());
 
   /* it should be impossible that handler is null here, but just in case */
   if (handler == nullptr) {

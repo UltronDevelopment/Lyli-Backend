@@ -22,9 +22,9 @@
 #include <boost/asio/io_context.hpp>
 
 #include <API/Router.hpp>
-#include <DB/Client.hpp>
 #include <Dotenv/Loader.hpp>
 #include <Server/TcpServer.hpp>
+#include <Session.hpp>
 #include <Signals/SignalHandler.hpp>
 #include <Utils/Logger.hpp>
 
@@ -44,7 +44,7 @@ static inline void loadEnv() {
 static inline void startDatabase() {
   logger.trace("Start DB Driver...");
 
-  auto &client = Lyli::DB::Client::getInstance();
+  auto &client = Lyli::Session::getInstance().getDatabaseClient();
   const char *srv = std::getenv("MONGO_SRV");
 
   if (srv == nullptr) {
@@ -70,14 +70,14 @@ static inline void startDatabase() {
 static inline void startServer() {
   /* setup router */
   logger.trace("Setup Router...");
-  Lyli::API::Router::getInstance().setup();
+  Lyli::Session::getInstance().getApiRouter().setup();
 
   /* start server */
   logger.trace("TCP Server starting...");
   Lyli::Server::TcpServer::start();
 }
 
-void setupSigals() {
+static inline void setupSigals() {
   Lyli::Utils::Logger::getInstance().debug("Signal Handler Setup...");
   signal(SIGINT, Lyli::SignalHandler::gracefullShutdown);
 }

@@ -1,7 +1,7 @@
 // This file is part of the Lyli Backend
-// File:    DB/Client.hpp
+// File:    Session.hpp
 // Author:  Mina <mina@upndevelopment.de>
-// Date:    13 June 2023
+// Date:    20 June 2023
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -21,38 +21,37 @@
 
 #pragma once
 
-#include <memory>
-#include <mongoc/mongoc.h>
+#include <API/Router.hpp>
+#include <DB/Client.hpp>
 
-#include <DB/Database.hpp>
-#include <Utils/MongoPointer.hpp>
-
-#include <set>
-#include <string>
-#include <string_view>
-
-namespace Lyli::DB {
-class Client {
+namespace Lyli {
+/* Singleton holding instances of classes to reduce the amount of singletons */
+class Session {
 public:
-  Client();
-  ~Client();
+  /* get session instance */
+  static Session &getInstance();
 
-  void create(const std::string &application_name, std::string_view srv);
+  /* delet move and copy constructor to ensure there can only be a single
+   * instance */
+  Session(const Session &) = delete;
+  Session &operator=(const Session &) = delete;
+  Session(Session &&) = delete;
+  Session &operator=(Session &&) = delete;
 
-  mongoc_client_t *getMongoClient() const;
+  /* get the database client */
+  DB::Client &getDatabaseClient();
 
-  bool isValid() const;
-
-  std::shared_ptr<Database> openDB(const std::string &db_name);
-
-  std::shared_ptr<Database> getDatabase(std::string_view db_name) const;
-
-  void close();
+  /* get the api router */
+  API::Router &getApiRouter();
 
 private:
-  bool valid;
+  Session();
+  ~Session();
 
-  Utils::MongoPointer::Client client;
-  std::set<std::shared_ptr<Database>> databases;
+  /* Database Client */
+  DB::Client client;
+
+  /* Router */
+  API::Router router;
 };
-} // namespace Lyli::DB
+} // namespace Lyli
