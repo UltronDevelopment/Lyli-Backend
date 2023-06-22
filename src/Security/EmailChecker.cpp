@@ -1,7 +1,7 @@
 // This file is part of the Lyli Backend
-// File:    Session.cpp
+// File:    Security/EmailChecker.cpp
 // Author:  Mina <mina@upndevelopment.de>
-// Date:    20 June 2023
+// Date:    21 June 2023
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -19,26 +19,17 @@
 // (c) 2023 UPN
 //
 
-#include <Session.hpp>
+#include <Security/EmailChecker.hpp>
 
-namespace Lyli {
-Session &Session::getInstance() {
-  static Session instance;
-  return instance;
+#include <regex>
+
+namespace Lyli::Security {
+EmailChecker::EmailChecker() = default;
+
+EmailChecker::~EmailChecker() = default;
+
+bool EmailChecker::check(std::string_view email) const {
+  return std::regex_match(email.data(), this->mail_regex);
 }
 
-DB::Client &Session::getDatabaseClient() { return this->client; }
-
-API::Router &Session::getApiRouter() { return this->router; }
-
-Security::EmailChecker &Session::getEmailChecker() {
-  return this->email_checker;
-}
-
-Security::PasswordHasher &Session::getPasswordHasher() {
-  return this->password_hasher;
-}
-
-Session::Session() = default;
-Session::~Session() = default;
-} // namespace Lyli
+} // namespace Lyli::Security

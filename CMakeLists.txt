@@ -40,6 +40,7 @@ add_executable(lyli-backend
     src/DB/Database.cpp
     src/Dotenv/Loader.cpp
     src/Dotenv/Parser.cpp
+    src/Security/EmailChecker.cpp
     src/Security/PasswordHasher.cpp
     src/Server/HTTP/HttpObject.cpp
     src/Server/HTTP/HttpRequest.cpp

@@ -21,9 +21,10 @@
 
 #pragma once
 
-#include "Security/PasswordHasher.hpp"
 #include <API/Router.hpp>
 #include <DB/Client.hpp>
+#include <Security/EmailChecker.hpp>
+#include <Security/PasswordHasher.hpp>
 
 namespace Lyli {
 /* Singleton holding instances of classes to reduce the amount of singletons */
@@ -45,6 +46,9 @@ public:
   /* get the api router */
   API::Router &getApiRouter();
 
+  /* get the email checker */
+  Security::EmailChecker &getEmailChecker();
+
   /* get the password hasher */
   Security::PasswordHasher &getPasswordHasher();
 
@@ -57,6 +61,9 @@ private:
 
   /* Router */
   API::Router router;
+
+  /* email checker */
+  Security::EmailChecker email_checker;
 
   /* password hasher*/
   Security::PasswordHasher password_hasher;
