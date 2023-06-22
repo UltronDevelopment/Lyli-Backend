@@ -21,7 +21,10 @@
 
 #pragma once
 
+#include <nlohmann/json.hpp>
+
 #include <Server/HTTP/HttpObject.hpp>
+#include <Server/HTTP/HttpResponse.hpp>
 #include <Utils/FormattedTime.hpp>
 
 #include <memory>
@@ -33,5 +36,17 @@ void inline basicHeader(
   object->setHeaderValue("Data", Utils::FormattedTime::HTTP());
   object->setHeaderValue("Connection", "close");
   object->setHeaderValue("Server", "Lyli-Backend");
+}
+
+void inline error(const std::shared_ptr<Server::HTTP::HttpResponse> &object,
+                  std::string_view error_message,
+                  Server::HTTP::ResponseCode code) {
+  object->setHeaderValue("Content-Type", "application/json");
+  object->setCode(code);
+
+  nlohmann::json error;
+  error["error"] = error_message;
+
+  object->setData(error.dump());
 }
 } // namespace Lyli::Utils::HttpUtils
