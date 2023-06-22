@@ -70,11 +70,9 @@ void Database::openCollection(const std::string &collection_name) {
 
 std::shared_ptr<Collection>
 Database::getCollection(std::string_view collection_name) const {
-  Utils::Logger::getInstance().debug(collection_name);
   auto it{
       std::find_if(this->collections.cbegin(), this->collections.cend(),
                    [&collection_name](const std::shared_ptr<Collection> &c) {
-                     Utils::Logger::getInstance().debug(c->getName());
                      return c->getName() == collection_name;
                    })};
 

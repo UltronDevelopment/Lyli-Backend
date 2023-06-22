@@ -38,7 +38,7 @@ PasswordHasher::PasswordHasher() {
   /* get our salt insert value from the environment (0 if nullptr)*/
   Utils::Logger::getInstance().debug("Get SALT_CFG");
   const char *salt_str{std::getenv("SALT_CFG")};
-  salt_insert = strtol(!salt_str ? "0" : salt_str, nullptr, 10);
+  salt_insert = !salt_str ? 0 : strtol(salt_str, nullptr, 10);
 
   Utils::Logger::getInstance().debug("Salt Config: " +
                                      std::to_string(salt_insert));
