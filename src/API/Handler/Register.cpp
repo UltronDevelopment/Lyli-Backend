@@ -26,6 +26,7 @@
 #include <API/Handler/Register.hpp>
 #include <DB/Client.hpp>
 #include <Server/HTTP/HttpResponse.hpp>
+#include <Session.hpp>
 #include <Utils/BsonPointer.hpp>
 #include <Utils/DatabaseUtils.hpp>
 #include <Utils/HttpUtils.hpp>
@@ -33,6 +34,7 @@
 
 #include <cstddef>
 #include <cstdlib>
+#include <string>
 
 namespace Lyli::API::Handler {
 bool addUser(const bson_t *document) {
@@ -46,15 +48,77 @@ bool addUser(const bson_t *document) {
   return collection->insertDocument(document);
 }
 
-bson_t *createUser(const nlohmann::json &jval) {
-  if (!jval.contains("username") || !jval.contains("email") ||
-      !jval.contains("password"))
+bson_t *createUser(nlohmann::json &jval) {
+
+  /* hash password */
+  auto hashed_passwd =
+      Session::getInstance().getPasswordHasher().hashPasswordForStore(
+          jval.at("password"));
+
+  if (hashed_passwd.empty()) {
     return nullptr;
+  }
+
+  /* replace hashed password in json */
+  jval["password"] = hashed_passwd;
 
   bson_error_t error;
 
   return bson_new_from_json(reinterpret_cast<uint8_t *>(jval.dump().data()), -1,
                             &error);
+}
+
+const char *check(nlohmann::json &jval) {
+  /* check if exists */
+  if (!jval.contains("username") || !jval.contains("email") ||
+      !jval.contains("password"))
+    return "Important field is missing";
+
+  /* check if values are strings */
+  if (!jval.at("username").is_string() || !jval.at("password").is_string() ||
+      !jval.at("email").is_string())
+    return "All values have to be strings";
+
+  /* check username size */
+  if (std::size_t size =
+          jval.at("username").get_ref<const std::string &>().size();
+      size < 4 || size > 20)
+    return "Username needs at least 4 character and is not allowed to be "
+           "longer than 20 characters";
+
+  /* check password size */
+  if (std::size_t size =
+          jval.at("password").get_ref<const std::string &>().size();
+      size < 8 || size > 25)
+    return "password needs at least 8 character and is not allowed to be "
+           "greater than 25 characters";
+
+  /* check email */
+  if (std::size_t size = jval.at("email").get_ref<const std::string &>().size();
+      size < 5 || size > 320)
+    return "email needs at least 5 character and is not allowed to be greater "
+           "than 320 characters";
+
+  /* validate email */
+  if (!Session::getInstance().getEmailChecker().check(
+          jval.at("email").get_ref<const std::string &>()))
+    return "no valid email";
+
+  /* get user collection */
+  const auto user_collection = Utils::DatabaseUtils::getCollectionFromDB(
+      std::getenv("DB_NAME"), std::getenv("USER_COLLECTION"));
+  if (user_collection == nullptr)
+    return "Database Error";
+
+  /* check if username already exists */
+  Utils::BsonPointer::Bson query(BCON_NEW(
+      "username", jval.at("username").get_ref<const std::string &>().c_str()));
+
+  if (const auto r = user_collection->searchDocument(query.get(), 1);
+      !r.empty())
+    return "username already exists";
+
+  return nullptr;
 }
 
 std::shared_ptr<Server::HTTP::HttpResponse>
@@ -91,6 +155,12 @@ handle_register(const std::shared_ptr<Server::HTTP::HttpRequest> &request) {
 
   if (json_data.is_null() || json_data.empty()) {
     resp->setCode(Server::HTTP::ResponseCode::BAD_REQUEST);
+    return resp;
+  }
+
+  if (const char *error = check(json_data); error != nullptr) {
+    Utils::HttpUtils::error(resp, error,
+                            Server::HTTP::ResponseCode::BAD_REQUEST);
     return resp;
   }
 
