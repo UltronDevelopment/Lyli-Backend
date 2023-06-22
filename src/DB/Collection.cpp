@@ -27,6 +27,7 @@
 #include <Utils/MongoPointer.hpp>
 
 #include <cstddef>
+#include <nlohmann/json_fwd.hpp>
 #include <string>
 
 namespace Lyli::DB {
@@ -59,7 +60,7 @@ nlohmann::json Collection::searchDocument(const bson_t *query,
   /* iterate over bson results and convert it to nlohmann json */
   const bson_t *buffer;
   while (mongoc_cursor_next(res.get(), &buffer)) {
-    ret.push_back(bson_as_json(buffer, nullptr));
+    ret.push_back(nlohmann::json::parse(bson_as_json(buffer, nullptr)));
   }
 
   return ret;
