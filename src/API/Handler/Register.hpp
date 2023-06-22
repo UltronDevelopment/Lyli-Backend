@@ -31,13 +31,6 @@
 #include <memory>
 
 namespace Lyli::API::Handler {
-
-bool addUser(const bson_t *document);
-
-bson_t *createUser(nlohmann::json &jval);
-
-const char *check(nlohmann::json &jval);
-
 std::shared_ptr<Server::HTTP::HttpResponse>
 handle_register(const std::shared_ptr<Server::HTTP::HttpRequest> &request);
 } // namespace Lyli::API::Handler

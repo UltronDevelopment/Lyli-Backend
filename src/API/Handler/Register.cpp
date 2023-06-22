@@ -108,15 +108,23 @@ const char *check(nlohmann::json &jval) {
   const auto user_collection = Utils::DatabaseUtils::getCollectionFromDB(
       std::getenv("DB_NAME"), std::getenv("USER_COLLECTION"));
   if (user_collection == nullptr)
-    return "Database Error";
+    return "database error";
 
   /* check if username already exists */
-  Utils::BsonPointer::Bson query(BCON_NEW(
+  Utils::BsonPointer::Bson username_query(BCON_NEW(
       "username", jval.at("username").get_ref<const std::string &>().c_str()));
 
-  if (const auto r = user_collection->searchDocument(query.get(), 1);
+  if (const auto r = user_collection->searchDocument(username_query.get(), 1);
       !r.empty())
     return "username already exists";
+
+  /* check if email already exists */
+  Utils::BsonPointer::Bson email_query(BCON_NEW(
+      "username", jval.at("email").get_ref<const std::string &>().c_str()));
+
+  if (const auto r = user_collection->searchDocument(email_query.get(), 1);
+      !r.empty())
+    return "email already exists";
 
   return nullptr;
 }
