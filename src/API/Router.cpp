@@ -19,6 +19,7 @@
 // (c) 2023 UPN
 //
 
+#include <API/Handler/Login.hpp>
 #include <API/Handler/Ping.hpp>
 #include <API/Handler/Register.hpp>
 #include <API/Router.hpp>
@@ -49,6 +50,10 @@ void Router::setup() {
   /* /register */
   if (this->addRoute("/register", Handler::handle_register))
     logger.error("failed to create route: /register");
+
+  /* /login */
+  if (this->addRoute("/login", Handler::login))
+    logger.error("failed to create route: /login");
 
   Utils::Logger::getInstance().debug("Router setup completed");
 }

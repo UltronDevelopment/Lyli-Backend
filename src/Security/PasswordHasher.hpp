@@ -49,6 +49,9 @@ public:
   /* get the configured pepper range */
   const std::pair<char, char> &getPepperRange() const;
 
+  /* lenght of salt string */
+  static constexpr int salt_lenght{6};
+
 private:
   /* generate a sha1 hash */
   std::pair<std::array<std::uint8_t, SHA_DIGEST_LENGTH>, bool>
@@ -68,7 +71,6 @@ private:
   int randomNumber(int min, int max) const;
 
   /* salt string lenght */
-  static constexpr int salt_lenght{6};
 
   /* determines where we store our salt in the hash, before saving the
    * password

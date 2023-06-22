@@ -32,6 +32,7 @@ ENDIF(DEBUG)
 add_compile_options(-Wall -Wextra -Werror -O2)
 
 add_executable(lyli-backend
+    src/API/Handler/Login.cpp
     src/API/Handler/Ping.cpp
     src/API/Handler/Register.cpp
     src/API/Router.cpp
