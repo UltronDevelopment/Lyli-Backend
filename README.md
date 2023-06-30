@@ -34,3 +34,5 @@ cmake --build ./build
 
 # 🤝 Contributing
 You can view the contribution guides [here](contributing.md)
+
+<sub>[Here is a link to the frontend repository](https://github.com/UltronDevelopment/Lyli)</sub>
