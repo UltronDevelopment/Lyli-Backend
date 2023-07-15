@@ -173,6 +173,7 @@ handle_register(const std::shared_ptr<Server::HTTP::HttpRequest> &request) {
   }
 
   /* try to create user */
+  json_data["isAdmin"] = false;
   if (Utils::BsonPointer::Bson document{createUser(json_data)};
       !addUser(document.get())) {
     Utils::Logger::getInstance().error("Failed to register");
