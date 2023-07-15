@@ -7,11 +7,11 @@
 - boost
 - mongoc
 - bson
-- openssl
+- crypto++
 
 ### Apt
 ```sh
-apt install cmake nlohmann-json3-dev libboost-dev libbson-dev libmongoc-dev libssl-dev
+apt install cmake nlohmann-json3-dev libboost-dev libbson-dev libmongoc-dev libcrypto++-dev
 ```
 
 ### mongoc linking hack (only required on ubuntu 20.04)
