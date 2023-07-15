@@ -19,6 +19,8 @@
 // (c) 2023 UPN
 //
 
+#include <crypto++/sha.h>
+
 #include <API/Handler/Login.hpp>
 #include <Security/PasswordHasher.hpp>
 #include <Server/HTTP/HttpResponse.hpp>
@@ -30,7 +32,6 @@
 
 #include <cstdlib>
 #include <memory>
-#include <openssl/sha.h>
 #include <string>
 
 namespace Lyli::API::Handler {
@@ -42,7 +43,7 @@ bool validatePassword(std::string_view password, std::string db_hash) {
   const auto salt = pwh.extractSalt(db_hash);
 
   if (salt.size() != Security::PasswordHasher::salt_lenght ||
-      db_hash.size() != SHA_DIGEST_LENGTH * 2)
+      db_hash.size() != CryptoPP::SHA1::DIGESTSIZE * 2)
     return false;
 
   /* pepper salted hash and check if one of the hashes match */

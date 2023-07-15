@@ -19,7 +19,7 @@
 // (c) 2023 UPN
 //
 
-#include <openssl/sha.h>
+#include <crypto++/sha.h>
 
 #include <Security/PasswordHasher.hpp>
 #include <Utils/Logger.hpp>
@@ -79,9 +79,7 @@ std::string PasswordHasher::hashPasswordForStore([
   password.insert(password.end(), this->getRandomPepper());
 
   /* hash password */
-  const auto &[hash, succeeded] = this->sha1(password);
-  if (!succeeded)
-    return "";
+  const auto hash = this->sha1(password);
 
   auto hash_string = this->sha1ToString(hash);
 
@@ -98,34 +96,21 @@ std::string PasswordHasher::hashPassword(std::string password,
   password.insert(password.cend(), pepper);
 
   /* hash password */
-  const auto &[hash, succeeded] = this->sha1(password);
-  if (!succeeded)
-    return "";
+  const auto hash = this->sha1(password);
 
   return this->sha1ToString(hash);
 }
 
-std::pair<std::array<std::uint8_t, SHA_DIGEST_LENGTH>, bool>
-PasswordHasher::sha1(const std::string &data) const {
-  std::array<std::uint8_t, SHA_DIGEST_LENGTH> buffer;
+std::array<std::uint8_t, CryptoPP::SHA1::DIGESTSIZE>
+PasswordHasher::sha1(std::string_view data) const {
+  std::array<std::uint8_t, CryptoPP::SHA1::DIGESTSIZE> buffer;
 
-  SHA_CTX ctx;
-  if (!SHA1_Init(&ctx)) {
-    Utils::Logger::getInstance().error("OpenSSL Failed SHA_INIT");
-    return {buffer, false};
-  }
+  CryptoPP::SHA1 sha;
 
-  if (!SHA1_Update(&ctx, data.c_str(), data.size())) {
-    Utils::Logger::getInstance().error("OpenSSL Failed SHA_Update");
-    return {buffer, false};
-  }
+  sha.Update(reinterpret_cast<const std::uint8_t *>(data.data()), data.size());
+  sha.Final(buffer.data());
 
-  if (!SHA1_Final(buffer.data(), &ctx)) {
-    Utils::Logger::getInstance().error("OpenSSL Failed SHA_Final");
-    return {buffer, false};
-  }
-
-  return {buffer, true};
+  return buffer;
 }
 
 std::string PasswordHasher::extractSalt(std::string &hash) const {
@@ -142,7 +127,7 @@ const std::pair<char, char> &PasswordHasher::getPepperRange() const {
 }
 
 std::string PasswordHasher::sha1ToString(
-    const std::array<std::uint8_t, SHA_DIGEST_LENGTH> &hash) const {
+    const std::array<std::uint8_t, CryptoPP::SHA1::DIGESTSIZE> &hash) const {
   std::stringstream buffer;
   buffer << std::hex;
 

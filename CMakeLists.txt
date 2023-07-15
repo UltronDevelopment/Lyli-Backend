@@ -6,9 +6,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
 find_package(nlohmann_json REQUIRED)
 find_package(mongoc-1.0 1.15 REQUIRED)
-find_package(OpenSSL REQUIRED)
+find_package(CryptoPP REQUIRED)
 
 include_directories(src)
 include_directories(/usr/include/libmongoc-1.0)
@@ -55,4 +57,4 @@ add_executable(lyli-backend
     src/Session.cpp
 )
 
-target_link_libraries(lyli-backend PUBLIC nlohmann_json pthread PRIVATE OpenSSL::Crypto mongo::mongoc_shared)
+target_link_libraries(lyli-backend PUBLIC nlohmann_json pthread PRIVATE mongo::mongoc_shared cryptopp)

@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include <openssl/sha.h>
+#include <crypto++/sha.h>
 
 #include <array>
 #include <cstddef>
@@ -54,12 +54,12 @@ public:
 
 private:
   /* generate a sha1 hash */
-  std::pair<std::array<std::uint8_t, SHA_DIGEST_LENGTH>, bool>
-  sha1(const std::string &data) const;
+  std::array<std::uint8_t, CryptoPP::SHA1::DIGESTSIZE>
+  sha1(std::string_view data) const;
 
   /* convert a sha1 hash to a readable string */
-  std::string
-  sha1ToString(const std::array<std::uint8_t, SHA_DIGEST_LENGTH> &hash) const;
+  std::string sha1ToString(
+      const std::array<std::uint8_t, CryptoPP::SHA1::DIGESTSIZE> &hash) const;
 
   /* generate a random {salt_lenght} byte long salt string */
   std::string saltGen() const;
