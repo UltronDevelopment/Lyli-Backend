@@ -22,6 +22,7 @@
 #include <API/Handler/Login.hpp>
 #include <API/Handler/Ping.hpp>
 #include <API/Handler/Register.hpp>
+#include <API/Handler/User/UserCheck.hpp>
 #include <API/Router.hpp>
 #include <Server/HTTP/HttpResponse.hpp>
 #include <Utils/HttpUtils.hpp>
@@ -54,6 +55,10 @@ void Router::setup() {
   /* /login */
   if (this->addRoute("/login", Handler::login))
     logger.error("failed to create route: /login");
+
+  /* user check */
+  if (this->addRoute("/user/check", Handler::User::getUserInfo))
+    logger.error("failed to create route: /user/check");
 
   Utils::Logger::getInstance().debug("Router setup completed");
 }

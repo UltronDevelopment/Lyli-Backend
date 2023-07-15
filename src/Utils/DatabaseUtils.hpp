@@ -23,9 +23,12 @@
 
 #include <DB/Collection.hpp>
 #include <DB/Database.hpp>
+#include <Security/SessionToken.hpp>
 #include <Session.hpp>
+#include <Utils/BsonPointer.hpp>
 #include <Utils/Logger.hpp>
 
+#include <cstdlib>
 #include <memory>
 
 namespace Lyli::Utils::DatabaseUtils {
@@ -41,5 +44,18 @@ getCollectionFromDB(std::string_view DB_NAME,
     return nullptr;
 
   return db->getCollection(COLLECTION_NAME);
+}
+
+inline nlohmann::json getUserFromToken(const Security::SessionToken &token) {
+  const auto collection = getCollectionFromDB(std::getenv("DB_NAME"),
+                                              std::getenv("USER_COLLECTION"));
+
+  if (collection == nullptr || token.getUsername().empty())
+    return {};
+
+  /* search for user in db by the given email */
+  Utils::BsonPointer::Bson user_query(
+      BCON_NEW("email", token.getEmail().data()));
+  return collection->searchDocument(user_query.get(), 1);
 }
 } // namespace Lyli::Utils::DatabaseUtils
