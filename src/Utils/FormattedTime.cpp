@@ -52,4 +52,13 @@ std::string FormattedTime::Logger() {
   buffer << std::put_time(tm, "%Y %b %d %X");
   return buffer.str();
 }
+
+std::size_t FormattedTime::UNIX() {
+  const auto tp = std::chrono::system_clock::now();
+  const auto time =
+      std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch())
+          .count();
+
+  return time;
+}
 } // namespace Lyli::Utils

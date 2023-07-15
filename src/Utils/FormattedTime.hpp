@@ -24,5 +24,5 @@
 namespace Lyli::Utils::FormattedTime {
 std::string HTTP();
 std::string Logger();
-
+std::size_t UNIX();
 } // namespace Lyli::Utils::FormattedTime
