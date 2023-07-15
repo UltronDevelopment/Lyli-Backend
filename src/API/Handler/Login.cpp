@@ -33,7 +33,6 @@
 
 #include <cstdlib>
 #include <memory>
-#include <nlohmann/json_fwd.hpp>
 #include <string>
 
 namespace Lyli::API::Handler {
@@ -88,14 +87,15 @@ const char *validateData(const nlohmann::json &jval,
   Utils::BsonPointer::Bson query(BCON_NEW(
       "email", jval.at("email").get_ref<const std::string &>().c_str()));
   *user_buffer = collection->searchDocument(query.get(), 1);
+
   if (user_buffer->empty())
     return "wrong email or password";
 
   *user_buffer = user_buffer->at(0);
 
   if (!user_buffer->contains("email") || !user_buffer->contains("username") ||
-      !user_buffer->contains("password"))
-    return "database error";
+      !user_buffer->contains("password") || !user_buffer->contains("isAdmin"))
+    return "database entry error";
 
   if (!validatePassword(
           jval.at("password").get_ref<const std::string &>(),
@@ -148,11 +148,13 @@ login(const std::shared_ptr<Server::HTTP::HttpRequest> &request) {
     return resp;
   }
 
-  /* generate session token */
+  /* generate a session token thats valid for 2 Days or 2 Hours if the user is
+   * an admin*/
+  bool isAdmin = user.at("isAdmin").get<bool>();
   Security::SessionToken token(
       user.at("username").get_ref<const std::string &>(),
       user.at("email").get_ref<const std::string &>(),
-      Utils::FormattedTime::UNIX());
+      Utils::FormattedTime::UNIX(), isAdmin ? 7200 : 172800);
 
   /* send token to client */
   resp->setCode(Server::HTTP::ResponseCode::OK);
