@@ -42,12 +42,11 @@ std::string bytesToString(const std::vector<std::uint8_t> &data) {
 std::vector<std::uint8_t> bytestringToBytes(std::string_view data) {
   std::vector<std::uint8_t> buffer;
 
-  auto half_size = data.size() / 2;
-  if (half_size != 0) {
+  if ((data.size() % 2) != 0) {
     return std::vector<std::uint8_t>();
   }
 
-  buffer.reserve(half_size);
+  buffer.reserve(data.size() / 2);
 
   std::array<char, 3> tmp{0, 0, 0};
   for (std::size_t i{0}; i < data.size(); i++) {
