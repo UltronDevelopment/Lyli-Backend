@@ -46,6 +46,7 @@ add_executable(lyli-backend
     src/Security/EmailChecker.cpp
     src/Security/KeyPair.cpp
     src/Security/PasswordHasher.cpp
+    src/Security/SessionToken.cpp
     src/Server/HTTP/HttpObject.cpp
     src/Server/HTTP/HttpRequest.cpp
     src/Server/HTTP/HttpResponse.cpp
@@ -54,6 +55,7 @@ add_executable(lyli-backend
     src/Signals/SignalHandler.cpp
     src/Utils/FormattedTime.cpp
     src/Utils/Logger.cpp
+    src/Utils/StringUtils.cpp
     src/main.cpp
     src/Session.cpp
 )

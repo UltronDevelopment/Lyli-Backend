@@ -23,6 +23,7 @@
 
 #include <API/Handler/Login.hpp>
 #include <Security/PasswordHasher.hpp>
+#include <Security/SessionToken.hpp>
 #include <Server/HTTP/HttpResponse.hpp>
 #include <Session.hpp>
 #include <Utils/BsonPointer.hpp>
@@ -32,6 +33,7 @@
 
 #include <cstdlib>
 #include <memory>
+#include <nlohmann/json_fwd.hpp>
 #include <string>
 
 namespace Lyli::API::Handler {
@@ -57,8 +59,13 @@ bool validatePassword(std::string_view password, std::string db_hash) {
   return false;
 }
 
-/* returns string containing error or a nullptr on success */
-const char *validateData(const nlohmann::json &jval) {
+/* returns string containing error or a nullptr on success, stores db entry as
+ * json in user_buffer */
+const char *validateData(const nlohmann::json &jval,
+                         nlohmann::json *user_buffer) {
+  if (user_buffer == nullptr)
+    return "internal error";
+
   /* check if username and password exist in request and are not empty */
   if (!jval.contains("email") || !jval.contains("password") ||
       jval.at("email").get_ref<const std::string &>().empty() ||
@@ -77,20 +84,22 @@ const char *validateData(const nlohmann::json &jval) {
   if (collection == nullptr)
     return "database error";
 
+  /* search for entry with same email and password */
   Utils::BsonPointer::Bson query(BCON_NEW(
       "email", jval.at("email").get_ref<const std::string &>().c_str()));
-  auto user = collection->searchDocument(query.get(), 1);
-  if (user.empty())
+  *user_buffer = collection->searchDocument(query.get(), 1);
+  if (user_buffer->empty())
     return "wrong email or password";
 
-  user = user.at(0);
+  *user_buffer = user_buffer->at(0);
 
-  if (!user.contains("email") || !user.contains("username") ||
-      !user.contains("password"))
+  if (!user_buffer->contains("email") || !user_buffer->contains("username") ||
+      !user_buffer->contains("password"))
     return "database error";
 
-  if (!validatePassword(jval.at("password").get_ref<const std::string &>(),
-                        user.at("password").get_ref<const std::string &>()))
+  if (!validatePassword(
+          jval.at("password").get_ref<const std::string &>(),
+          user_buffer->at("password").get_ref<const std::string &>()))
     return "wrong email or password";
 
   return nullptr;
@@ -133,13 +142,21 @@ login(const std::shared_ptr<Server::HTTP::HttpRequest> &request) {
     return resp;
   }
 
-  if (const auto *err = validateData(json_data); err != nullptr) {
+  nlohmann::json user;
+  if (const auto *err = validateData(json_data, &user); err != nullptr) {
     Utils::HttpUtils::error(resp, err, Server::HTTP::ResponseCode::BAD_REQUEST);
     return resp;
   }
 
+  /* generate session token */
+  Security::SessionToken token(
+      user.at("username").get_ref<const std::string &>(),
+      user.at("email").get_ref<const std::string &>(),
+      Utils::FormattedTime::UNIX());
+
+  /* send token to client */
   resp->setCode(Server::HTTP::ResponseCode::OK);
-  resp->setData("Login Successful");
+  resp->setData(R"({"token": ")" + token.encryptedToken() + R"("})");
   return resp;
 }
 } // namespace Lyli::API::Handler
