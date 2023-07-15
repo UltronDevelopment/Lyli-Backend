@@ -1,7 +1,7 @@
 // This file is part of the Lyli Backend
-// File:    Utils/StringUtils.hpp
+// File:    Security/KeyPair.hpp
 // Author:  Mina <mina@upndevelopment.de>
-// Date:    30 May 2023
+// Date:    15 July 2023
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -21,23 +21,25 @@
 
 #pragma once
 
-#include <algorithm>
-#include <string_view>
+#include <crypto++/osrng.h>
+#include <crypto++/rsa.h>
 
-namespace Lyli::Utils::StringUtils {
-/* get the position from the next byte with the value @c in @str as iterator */
-inline const char *ptrToNext(std::string_view str, char c) {
-  if (str.begin() + 1 == str.end())
-    return nullptr;
+#include <memory>
 
-  auto it = std::find(str.begin(), str.end(), c);
-  if (it == str.end())
-    return nullptr;
+namespace Lyli::Security {
+/* public private keypair*/
+class KeyPair {
+public:
+  KeyPair();
+  ~KeyPair() = default;
 
-  return it;
-}
+  std::string encrypt(std::string_view data);
 
-std::string bytesToString(const std::vector<std::uint8_t> &data);
+  std::string decrypt(const std::vector<std::uint8_t> &data);
 
-std::vector<std::uint8_t> bytestringToBytes(std::string_view data);
-} // namespace Lyli::Utils::StringUtils
+private:
+  CryptoPP::AutoSeededRandomPool rng;
+  std::shared_ptr<CryptoPP::RSA::PrivateKey> privat_key;
+  std::shared_ptr<CryptoPP::RSA::PublicKey> public_key;
+};
+} // namespace Lyli::Security

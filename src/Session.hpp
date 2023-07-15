@@ -24,6 +24,7 @@
 #include <API/Router.hpp>
 #include <DB/Client.hpp>
 #include <Security/EmailChecker.hpp>
+#include <Security/KeyPair.hpp>
 #include <Security/PasswordHasher.hpp>
 
 namespace Lyli {
@@ -52,6 +53,9 @@ public:
   /* get the password hasher */
   Security::PasswordHasher &getPasswordHasher();
 
+  /* get the keypair */
+  Security::KeyPair &getKeyPair();
+
 private:
   Session();
   ~Session();
@@ -67,5 +71,8 @@ private:
 
   /* password hasher*/
   Security::PasswordHasher password_hasher;
+
+  /* rsa keypair */
+  Security::KeyPair key_pair;
 };
 } // namespace Lyli

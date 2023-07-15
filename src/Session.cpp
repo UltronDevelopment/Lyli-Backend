@@ -39,6 +39,8 @@ Security::PasswordHasher &Session::getPasswordHasher() {
   return this->password_hasher;
 }
 
+Security::KeyPair &Session::getKeyPair() { return this->key_pair; }
+
 Session::Session() = default;
 Session::~Session() = default;
 } // namespace Lyli
