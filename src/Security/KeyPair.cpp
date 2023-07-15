@@ -29,6 +29,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace Lyli::Security {
@@ -39,6 +40,8 @@ KeyPair::KeyPair() {
 
   this->privat_key = std::make_shared<CryptoPP::RSA::PrivateKey>(params);
   this->public_key = std::make_shared<CryptoPP::RSA::PublicKey>(params);
+
+  Utils::Logger::getInstance().trace("Generated a new RSA KeyPair");
 }
 
 std::string KeyPair::encrypt(std::string_view data) {
@@ -64,11 +67,20 @@ std::string KeyPair::decrypt(const std::vector<std::uint8_t> &data) {
 
   if (dpl == 0)
     return "";
-  CryptoPP::SecByteBlock recovered{dpl};
+  std::string recovered;
+  recovered.resize(dpl);
 
-  /* decrypt */
-  CryptoPP::DecodingResult res{
-      d.Decrypt(this->rng, data.data(), data.size(), recovered)};
+  CryptoPP::DecodingResult res{};
+  try {
+    /* decrypt */
+    res = d.Decrypt(this->rng, data.data(), data.size(),
+                    reinterpret_cast<std::uint8_t *>(recovered.data()));
+  }
+
+  catch (const CryptoPP::Exception &e) {
+    Utils::Logger::getInstance().error(e.GetWhat());
+    return "";
+  }
 
   /* sanity check */
   if (!res.isValidCoding) {
@@ -77,7 +89,6 @@ std::string KeyPair::decrypt(const std::vector<std::uint8_t> &data) {
     return "";
   }
 
-  return std::string(recovered.data(),
-                     recovered.data() + recovered.SizeInBytes());
+  return recovered;
 }
 } // namespace Lyli::Security
