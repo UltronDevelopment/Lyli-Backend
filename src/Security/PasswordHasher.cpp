@@ -78,16 +78,12 @@ std::string PasswordHasher::hashPasswordForStore([
   password.append(salt);
   password.insert(password.end(), this->getRandomPepper());
 
-  Utils::Logger::getInstance().debug("PW is now: " + password);
-
   /* hash password */
   const auto &[hash, succeeded] = this->sha1(password);
   if (!succeeded)
     return "";
 
   auto hash_string = this->sha1ToString(hash);
-
-  Utils::Logger::getInstance().debug("Hash: " + hash_string);
 
   /* store salt in hased password */
   hash_string.insert(salt_insert, salt);
@@ -145,9 +141,8 @@ const std::pair<char, char> &PasswordHasher::getPepperRange() const {
   return this->pepper_range;
 }
 
-std::string PasswordHasher::sha1ToString([
-    [maybe_unused]] const std::array<std::uint8_t, SHA_DIGEST_LENGTH> &hash)
-    const {
+std::string PasswordHasher::sha1ToString(
+    const std::array<std::uint8_t, SHA_DIGEST_LENGTH> &hash) const {
   std::stringstream buffer;
   buffer << std::hex;
 
@@ -183,7 +178,9 @@ int PasswordHasher::randomNumber(int min, int max) const {
   std::mt19937 gen(rd());
 
   std::vector<int> v;
-  for (int i{min}; i < max; i++) {
+  v.reserve(max);
+
+  for (int i{min}; i <= max; i++) {
     v.push_back(i);
   }
 
