@@ -26,11 +26,12 @@
 
 namespace Lyli::Security {
 SessionToken::SessionToken(std::string_view username, std::string_view email,
-                           std::size_t timestamp) {
-  nlohmann::json json;
-  json["username"] = username;
-  json["email"] = email;
-  json["timestamp"] = timestamp;
+                           std::size_t timestamp, std::size_t time_valid) {
+  this->_json["username"] = username;
+  this->_json["email"] = email;
+
+  /* Tokens are valid for 2 Days */
+  this->_json["timestamp"] = timestamp + time_valid;
 }
 
 SessionToken::SessionToken(std::string_view encrypted_token) {
@@ -71,15 +72,7 @@ std::size_t SessionToken::getTimestamp() {
   if (!this->_json.contains("timestamp"))
     return 0;
 
-  const auto &str = this->_json.at("username").get_ref<const std::string &>();
-
-  /* check if string is not empty and numerical */
-  if (str.empty() || std::find_if(str.begin(), str.end(), [](unsigned char c) {
-                       return !std::isdigit(c);
-                     }) != str.end())
-    return 0;
-
-  return strtoul(str.c_str(), nullptr, 10);
+  return this->_json.at("timestamp").get<std::size_t>();
 }
 
 } // namespace Lyli::Security

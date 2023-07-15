@@ -32,7 +32,7 @@ namespace Lyli::Security {
 class SessionToken {
 public:
   SessionToken(std::string_view username, std::string_view email,
-               std::size_t timestamp);
+               std::size_t timestamp, std::size_t time_valid);
 
   explicit SessionToken(std::string_view encrypted_token);
 
