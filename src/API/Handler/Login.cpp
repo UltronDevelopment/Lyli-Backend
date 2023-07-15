@@ -64,6 +64,11 @@ const char *validateData(const nlohmann::json &jval) {
       jval.at("password").get_ref<const std::string &>().empty())
     return "email and password are required to login";
 
+  /* validate email */
+  if (!Session::getInstance().getEmailChecker().check(
+          jval.at("email").get_ref<const std::string &>()))
+    return "no valid email";
+
   /* get user collection from database */
   const auto collection = Utils::DatabaseUtils::getCollectionFromDB(
       std::getenv("DB_NAME"), std::getenv("USER_COLLECTION"));
