@@ -41,7 +41,7 @@ SessionToken::SessionToken(std::string_view encrypted_token) {
   if (bytes.empty())
     return;
 
-  const auto dec = Session::getInstance().getKeyPair().decrypt(bytes);
+  const auto dec = Session::getInstance().getKeyPair()->decrypt(bytes);
   if (dec.empty())
     return;
 
@@ -51,7 +51,7 @@ SessionToken::SessionToken(std::string_view encrypted_token) {
 const nlohmann::json &SessionToken::asJson() const { return this->_json; }
 
 std::string SessionToken::encryptedToken() const {
-  return Session::getInstance().getKeyPair().encrypt(this->_json.dump());
+  return Session::getInstance().getKeyPair()->encrypt(this->_json.dump());
 }
 
 std::string_view SessionToken::getUsername() const {

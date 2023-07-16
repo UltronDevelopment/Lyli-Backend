@@ -36,6 +36,9 @@ void gracefullShutdown(int sig) {
   /* Stop TCP Server */
   Server::TcpServer::stop();
 
+  /* stop the spam agent */
+  Session::getInstance().getSpamAgent()->stop();
+
   /* close database connection */
   Session::getInstance().getDatabaseClient().close();
 }

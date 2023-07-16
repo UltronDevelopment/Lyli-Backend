@@ -67,6 +67,13 @@ static inline void startDatabase() {
   db->openCollection(std::getenv("USER_COLLECTION"));
 }
 
+static inline void startSpamAgent() {
+  const auto &spam_agent = Lyli::Session::getInstance().getSpamAgent();
+  spam_agent->start();
+  spam_agent->guardRoute("/login");
+  spam_agent->guardRoute("/register");
+}
+
 static inline void startServer() {
   /* setup router */
   logger.trace("Setup Router...");
@@ -86,6 +93,7 @@ int main() {
   setupSigals();
   loadEnv();
   startDatabase();
+  startSpamAgent();
   startServer();
 
   return 0;

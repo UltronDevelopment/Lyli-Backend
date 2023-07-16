@@ -101,6 +101,13 @@ void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
     address = x_ip;
   }
 
+  /* spam check on guarded routes */
+  if (const auto &spam_agent = Session::getInstance().getSpamAgent();
+      spam_agent->isIpBlocked(address) ||
+      (spam_agent->isRouteGuarded(req->getPath()) &&
+       !spam_agent->writeEntry(address)))
+    return;
+
   if (address != "127.0.0.1") {
     Utils::Logger::getInstance().trace(
         "[" + address + "] " +

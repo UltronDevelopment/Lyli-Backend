@@ -39,7 +39,13 @@ Security::PasswordHasher &Session::getPasswordHasher() {
   return this->password_hasher;
 }
 
-Security::KeyPair &Session::getKeyPair() { return this->key_pair; }
+std::shared_ptr<Security::KeyPair> &Session::getKeyPair() {
+  return this->key_pair;
+}
+
+std::shared_ptr<Lyli::Security::SpamAgent> &Session::getSpamAgent() {
+  return this->spam_agent;
+}
 
 Session::Session() = default;
 Session::~Session() = default;

@@ -26,6 +26,9 @@
 #include <Security/EmailChecker.hpp>
 #include <Security/KeyPair.hpp>
 #include <Security/PasswordHasher.hpp>
+#include <Security/SpamAgent.hpp>
+
+#include <memory>
 
 namespace Lyli {
 /* Singleton holding instances of classes to reduce the amount of singletons */
@@ -54,7 +57,10 @@ public:
   Security::PasswordHasher &getPasswordHasher();
 
   /* get the keypair */
-  Security::KeyPair &getKeyPair();
+  std::shared_ptr<Security::KeyPair> &getKeyPair();
+
+  /* get the spam agent */
+  std::shared_ptr<Lyli::Security::SpamAgent> &getSpamAgent();
 
 private:
   Session();
@@ -73,6 +79,11 @@ private:
   Security::PasswordHasher password_hasher;
 
   /* rsa keypair */
-  Security::KeyPair key_pair;
+  std::shared_ptr<Security::KeyPair> key_pair = {
+      std::make_shared<Security::KeyPair>()};
+
+  /* spam agent */
+  std::shared_ptr<Lyli::Security::SpamAgent> spam_agent{
+      std::make_shared<Lyli::Security::SpamAgent>()};
 };
 } // namespace Lyli

@@ -48,6 +48,7 @@ add_executable(lyli-backend
     src/Security/KeyPair.cpp
     src/Security/PasswordHasher.cpp
     src/Security/SessionToken.cpp
+    src/Security/SpamAgent.cpp
     src/Server/HTTP/HttpObject.cpp
     src/Server/HTTP/HttpRequest.cpp
     src/Server/HTTP/HttpResponse.cpp
