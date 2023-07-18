@@ -83,7 +83,7 @@ std::shared_ptr<Server::HTTP::HttpResponse> Router::notFound([
   Utils::HttpUtils::basicHeader(resp);
 
   resp->setHeaderValue("Content-Type", "application/json");
-  resp->setHeaderValue("Content-Lenght", std::to_string(err_msg.size()));
+  resp->setHeaderValue("Content-Length", std::to_string(err_msg.size()));
   resp->setData(err_msg);
 
   return resp;

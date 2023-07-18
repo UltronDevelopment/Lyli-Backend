@@ -28,7 +28,10 @@ namespace Lyli::Server::HTTP {
 HttpResponse::HttpResponse() = default;
 HttpResponse::~HttpResponse() = default;
 
-void HttpResponse::setCode(ResponseCode code) { this->code = code; }
+void HttpResponse::setCode(ResponseCode code) {
+  this->code = code;
+  this->setHeaderValue("Content-Type", "application/json");
+}
 
 std::string HttpResponse::toString() const {
   std::stringstream buffer;
