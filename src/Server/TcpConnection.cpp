@@ -96,7 +96,8 @@ void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
     return;
   }
 
-  if (auto x_ip = req->getHeaderValue("X-Real-IP"); !x_ip.empty()) {
+  if (auto x_ip = req->getHeaderValue("X-Real-IP");
+      address == "127.0.0.1" && !x_ip.empty()) {
     x_ip.remove_suffix('\r');
     address = x_ip;
   }
@@ -127,13 +128,13 @@ void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
   if (handler == nullptr) {
     /* TODO: Return Code 418 to client or send penguin */
     Utils::Logger::getInstance().error(
-        "Found no handler (that is fucking bad and should be fixed RIGHT "
+        "Found no handler (this is fucking bad and should be fixed RIGHT "
         "NOW)");
     /* reset connection, cause i wrote garbage */
     return;
   }
 
-  auto resp = handler(req);
+  const auto resp = handler(req);
 
   /* reset connection if null */
   if (resp == nullptr)
