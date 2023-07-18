@@ -2,6 +2,7 @@
 <sup>Developer Guide</sup>
 
 ## 1️⃣ Install Dependencies
+- clang
 - cmake
 - nlohmann_json
 - boost
@@ -11,7 +12,7 @@
 
 ### Apt
 ```sh
-apt install cmake nlohmann-json3-dev libboost-dev libbson-dev libmongoc-dev libcrypto++-dev
+apt install clang cmake nlohmann-json3-dev libboost-dev libbson-dev libmongoc-dev libcrypto++-dev
 ```
 
 ### mongoc linking hack (only required on ubuntu 20.04)
@@ -28,7 +29,7 @@ sed -i 's/foreach\(.*\)_IMPORT_CHECK_TARGETS\(.*\)/foreach\1_IMPORT_CHECK_TARGET
 ### Debug Build (without run :c)
 ```sh
 mkdir -p build
-cmake -S . -B ./build -DDEBUG=1
+cmake -S . -B ./build -DDEBUG=1 -DCMAKE_C_COMPILER=/bin/clang -DCMAKE_CXX_COMPILER=/bin/clang++
 cmake --build ./build
 ```
 
