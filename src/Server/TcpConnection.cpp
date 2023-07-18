@@ -19,6 +19,7 @@
 // (c) 2023 UPN
 //
 
+#include <algorithm>
 #include <boost/asio/completion_condition.hpp>
 #include <boost/asio/error.hpp>
 #include <boost/asio/placeholders.hpp>
@@ -96,9 +97,11 @@ void TcpConnection::respond(std::shared_ptr<TcpConnection> con,
     return;
   }
 
-  if (auto x_ip = req->getHeaderValue("X-Real-IP");
+  if (std::string x_ip{req->getHeaderValue("X-Real-IP")};
       address == "127.0.0.1" && !x_ip.empty()) {
-    x_ip.remove_suffix('\r');
+    if (const auto it = x_ip.find("\r"); it != std::string::npos)
+      address.erase(it);
+
     address = x_ip;
   }
 
